@@ -42,15 +42,12 @@ public class Players {
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
 
-		System.out.println("> Loading inventory for " + player.getDisplayName());
-
 		File source = new File(storagePath + player.getUniqueId() + ".dat");
 		File dest = new File(serverPath + player.getUniqueId() + ".dat");
 
 		if (Files.exists(source.toPath())) {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("> Done!");
 			} catch (IOException e) {
 				System.out.println("ERROR: Failed to copy file from storage");
 				System.out.println("Reason: " + e.getMessage());
@@ -68,20 +65,15 @@ public class Players {
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
 
-		System.out.println("> Saving inventory for " + player.getDisplayName());
-
 		//Avoid item duping
 		plugin.getServer().savePlayers();
 
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
 
-		System.out.println("> Path: " + serverPath + player.getUniqueId() + ".dat");
-
 		if (Files.exists(source.toPath())) {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				System.out.println("> Done!");
 			} catch (IOException e) {
 				System.out.println("ERROR: Failed to write file to storage");
 				System.out.println("Reason: " + e.getMessage());
