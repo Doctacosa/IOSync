@@ -33,7 +33,8 @@ public class IOSync extends JavaPlugin {
 		if (!serverPath.endsWith("/") && !serverPath.endsWith("\\"))
 			serverPath += "/";
 
-		thisLoginListener = new LoginListener(this, storagePath, serverPath);
+		thisLoginListener = new LoginListener(this);
+		Players.init(this, storagePath, serverPath);
 
 		getLogger().info("IOSync enabled");
 	}
