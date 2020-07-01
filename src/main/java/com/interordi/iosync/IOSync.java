@@ -13,7 +13,7 @@ public class IOSync extends JavaPlugin {
 
 		//TODO: Configurable file paths
 		String storagePath = "C:\\Jeux\\Minecraft\\players\\";
-		String serverPath = "C:\\Jeux\\Minecraft\\server-tasmantis\\";
+		String serverPath = "C:\\Jeux\\Minecraft\\server-tasmantis\\world_tasmantis\\playerdata\\";
 
 		thisLoginListener = new LoginListener(this, storagePath, serverPath);
 
