@@ -28,9 +28,9 @@ public class IOSync extends JavaPlugin {
 		//Get the paths to copy to and from
 		String storagePath = this.getConfig().getString("storage-path");
 		String serverPath = this.getConfig().getString("server-path");
-		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\"))
+		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\") && !storagePath.isEmpty())
 			storagePath += "/";
-		if (!serverPath.endsWith("/") && !serverPath.endsWith("\\"))
+		if (!serverPath.endsWith("/") && !serverPath.endsWith("\\") && !serverPath.isEmpty())
 			serverPath += "/";
 
 		thisLoginListener = new LoginListener(this);

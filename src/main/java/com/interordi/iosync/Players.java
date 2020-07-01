@@ -25,6 +25,9 @@ public class Players {
 
 	public static void loadPlayer(Player player) {
 
+		if (storagePath.isEmpty() || serverPath.isEmpty())
+			return;
+
 		System.out.println("> Loading inventory for " + player.getDisplayName());
 
 		File source = new File(storagePath + player.getUniqueId() + ".dat");
@@ -44,6 +47,9 @@ public class Players {
 
 
 	public static void savePlayer(Player player) {
+
+		if (storagePath.isEmpty() || serverPath.isEmpty())
+			return;
 
 		System.out.println("> Saving inventory for " + player.getDisplayName());
 
