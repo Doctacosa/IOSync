@@ -55,6 +55,9 @@ public class LoginListener implements Listener {
 
 		System.out.println("> Saving inventory for " + event.getPlayer().getDisplayName());
 
+		//Avoid item duping
+		plugin.getServer().savePlayers();
+
 		File source = new File(this.serverPath + event.getPlayer().getUniqueId() + ".dat");
 		File dest = new File(this.storagePath + event.getPlayer().getUniqueId() + ".dat");
 
