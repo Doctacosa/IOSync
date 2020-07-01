@@ -5,9 +5,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Properties;
 
 import com.interordi.iosync.listeners.LoginListener;
 import com.interordi.utilities.CommandTargets;
@@ -25,13 +28,24 @@ public class IOSync extends JavaPlugin {
 		//Always ensure we've got a copy of the config in place (does not overwrite existing)
 		this.saveDefaultConfig();
 
-		//Get the paths to copy to and from
+		//Get the storage path to use, if any
 		String storagePath = this.getConfig().getString("storage-path");
-		String serverPath = this.getConfig().getString("server-path");
 		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\") && !storagePath.isEmpty())
 			storagePath += "/";
-		if (!serverPath.endsWith("/") && !serverPath.endsWith("\\") && !serverPath.isEmpty())
-			serverPath += "/";
+
+		//Get the location of the playerdata folder
+		String serverPath = "";
+		try {
+			BufferedReader is = new BufferedReader(new FileReader("server.properties"));
+			Properties props = new Properties();
+			props.load(is);
+			is.close();
+			serverPath = props.getProperty("level-name");
+		} catch (IOException e) {
+			System.out.println("ERROR: Couldn't read level-name, defaulting to 'world'");
+			serverPath = "world";
+		}
+		serverPath = "./" + serverPath + "/playerdata/";
 
 		thisLoginListener = new LoginListener(this);
 		Players.init(this, storagePath, serverPath);
