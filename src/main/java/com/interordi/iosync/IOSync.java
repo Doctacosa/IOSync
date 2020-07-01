@@ -111,7 +111,7 @@ public class IOSync extends JavaPlugin {
 
 			//Save players so their inventory and metadata is up to date
 			getServer().savePlayers();
-			//TODO: Copy file
+			Players.savePlayer(target);
 			target.sendPluginMessage(this, "BungeeCord", b.toByteArray());
 
 			return true;
