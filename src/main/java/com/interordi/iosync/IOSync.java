@@ -11,9 +11,16 @@ public class IOSync extends JavaPlugin {
 
 	public void onEnable() {
 
-		//TODO: Configurable file paths
-		String storagePath = "C:\\Jeux\\Minecraft\\players\\";
-		String serverPath = "C:\\Jeux\\Minecraft\\server-tasmantis\\world_tasmantis\\playerdata\\";
+		//Always ensure we've got a copy of the config in place (does not overwrite existing)
+		this.saveDefaultConfig();
+
+		//Get the paths to copy to and from
+		String storagePath = this.getConfig().getString("storage-path");
+		String serverPath = this.getConfig().getString("server-path");
+		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\"))
+			storagePath += "/";
+		if (!serverPath.endsWith("/") && !serverPath.endsWith("\\"))
+			serverPath += "/";
 
 		thisLoginListener = new LoginListener(this, storagePath, serverPath);
 
