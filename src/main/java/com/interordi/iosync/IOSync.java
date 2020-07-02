@@ -29,7 +29,9 @@ public class IOSync extends JavaPlugin {
 		this.saveDefaultConfig();
 
 		//Get the storage path to use, if any
-		String storagePath = this.getConfig().getString("storage-path");
+		String storagePath = this.getConfig().getString("storage-path", "");
+		if (storagePath.equalsIgnoreCase("null"))
+			storagePath = "";
 		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\") && !storagePath.isEmpty())
 			storagePath += "/";
 
