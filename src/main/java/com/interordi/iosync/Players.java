@@ -127,13 +127,17 @@ public class Players {
 		for (Map.Entry< UUID , Location > entry : posPlayers.entrySet()) {
 			UUID uuid = entry.getKey();
 			Location pos = entry.getValue();
-			
-			statsAccess.set("positions." + uuid + ".world", pos.getWorld().getName());
-			statsAccess.set("positions." + uuid + ".x", pos.getX());
-			statsAccess.set("positions." + uuid + ".y", pos.getY());
-			statsAccess.set("positions." + uuid + ".z", pos.getZ());
-			statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
-			statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
+
+			try {
+				statsAccess.set("positions." + uuid + ".world", pos.getWorld().getName());
+				statsAccess.set("positions." + uuid + ".x", pos.getX());
+				statsAccess.set("positions." + uuid + ".y", pos.getY());
+				statsAccess.set("positions." + uuid + ".z", pos.getZ());
+				statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
+				statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
+			} catch (NullPointerException e) {
+				//Ignore
+			}
 		}
 		
 		try {
