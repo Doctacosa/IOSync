@@ -60,13 +60,34 @@ public class Players {
 	//Save a player's inventory to storage
 	public static void savePlayer(Player player) {
 
-		setPlayerPosition(player);
+		if (storagePath.isEmpty() || serverPath.isEmpty())
+			return;
+
+		//Avoid item duping
+		plugin.getServer().savePlayers();
+
+		saveOnePlayer(player);
+	}
+
+
+	//Save the data of all players, good for periodic checks
+	public static void saveAllPlayers() {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
 
 		//Avoid item duping
 		plugin.getServer().savePlayers();
+
+		for (Player player : plugin.getServer().getOnlinePlayers()) {
+			saveOnePlayer(player);
+		}
+	}
+
+
+	//Save the data of one player
+	public static void saveOnePlayer(Player player) {
+		setPlayerPosition(player);
 
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
