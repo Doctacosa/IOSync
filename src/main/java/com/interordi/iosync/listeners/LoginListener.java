@@ -27,7 +27,9 @@ public class LoginListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		Players.savePlayer(event.getPlayer());
+		//Save all players to ensure periodic safety saves
+		Players.saveAllPlayers();
+		//Players.savePlayer(event.getPlayer());
 	}
 
 
