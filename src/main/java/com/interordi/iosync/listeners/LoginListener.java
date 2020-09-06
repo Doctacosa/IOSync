@@ -13,8 +13,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class LoginListener implements Listener {
 
+	boolean enablePositionSaving = false;
 	
-	public LoginListener(IOSync plugin) {
+	public LoginListener(IOSync plugin, boolean enablePositionSaving) {
+		this.enablePositionSaving = enablePositionSaving;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
 
@@ -39,7 +41,7 @@ public class LoginListener implements Listener {
 		Location pos = Players.getPlayerPosition(event.getPlayer().getUniqueId());
 		if (pos != null)
 			event.getPlayer().teleport(pos);
-		else
+		else if (enablePositionSaving)
 			event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
 	}
 }

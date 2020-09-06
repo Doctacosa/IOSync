@@ -49,7 +49,7 @@ public class IOSync extends JavaPlugin {
 		}
 		serverPath = "./" + serverPath + "/playerdata/";
 
-		thisLoginListener = new LoginListener(this);
+		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
 		Players.loadPositions();
 
