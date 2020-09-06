@@ -73,6 +73,12 @@ public class Players {
 	//Save the data of all players, good for periodic checks
 	public static void saveAllPlayers() {
 
+		//Save positions right away
+		for (Player player : plugin.getServer().getOnlinePlayers()) {
+			setPlayerPosition(player);
+		}
+		savePositions();
+
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
 
@@ -88,6 +94,7 @@ public class Players {
 	//Save the data of one player
 	public static void saveOnePlayer(Player player) {
 		setPlayerPosition(player);
+		savePositions();
 
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
@@ -157,7 +164,7 @@ public class Players {
 				statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
 				statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
 			} catch (NullPointerException e) {
-				//Ignore
+				System.out.println("Failed to save the position for " + uuid.toString());
 			}
 		}
 		
@@ -172,7 +179,6 @@ public class Players {
 	//Set a player's position
 	public static void setPlayerPosition(Player player) {
 		posPlayers.put(player.getUniqueId(), player.getLocation());
-		savePositions();
 	}
 
 
