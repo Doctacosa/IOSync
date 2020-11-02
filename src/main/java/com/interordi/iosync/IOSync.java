@@ -102,6 +102,12 @@ public class IOSync extends JavaPlugin {
 			if (args.length >= 2) {
 				destination = args[0];
 				target = getServer().getPlayer(args[1]);
+
+				//Target not found, maybe the player inverted the two options?
+				if (target == null) {
+					target = getServer().getPlayer(args[0]);
+					destination = args[1];
+				}
 			} else if (args.length == 1) {
 				if (!(sender instanceof Player))
 					return false;
@@ -110,6 +116,11 @@ public class IOSync extends JavaPlugin {
 				target = (Player)sender;
 			} else {
 				sender.sendMessage("§cMissing parameter: destination server");
+				return true;
+			}
+
+			if (target == null) {
+				sender.sendMessage("§cTarget player not found!");
 				return true;
 			}
 
