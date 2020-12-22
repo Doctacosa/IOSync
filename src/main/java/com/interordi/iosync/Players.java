@@ -23,7 +23,9 @@ public class Players {
 	private static String storagePath;
 	private static String serverPath;
 
-	private static String positionsPath = "plugins/IOSync/positions.yml";
+	private static String configPath = "plugins/IOSync/";
+
+	private static String positionsFile = "positions.yml";
 	private static Map< UUID, Location > posPlayers;
 	
 	
@@ -32,7 +34,19 @@ public class Players {
 		Players.storagePath = storagePath;
 		Players.serverPath = serverPath;
 
-		posPlayers = new HashMap< UUID, Location >();
+		loadAllData();
+	}
+
+
+	//Load all the data from files
+	public static void loadAllData() {
+		posPlayers = loadPositions(positionsFile);
+	}
+
+
+	//Save all the data to files
+	public static void saveAllData() {
+		savePositions(positionsFile, posPlayers);
 	}
 
 
@@ -77,7 +91,7 @@ public class Players {
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
 			setPlayerPosition(player);
 		}
-		savePositions();
+		saveAllData();
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -94,7 +108,7 @@ public class Players {
 	//Save the data of one player
 	public static void saveOnePlayer(Player player) {
 		setPlayerPosition(player);
-		savePositions();
+		saveAllData();
 
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
@@ -112,20 +126,22 @@ public class Players {
 
 
 	//Get the positions of all players
-	public static void loadPositions() {
+	public static Map< UUID, Location > loadPositions(String filename) {
+
+		Map< UUID, Location > positions = new HashMap< UUID, Location >();
 		
-		File statsFile = new File(positionsPath);
+		File statsFile = new File(configPath + filename);
 		FileConfiguration statsAccess = YamlConfiguration.loadConfiguration(statsFile);
 		
 		ConfigurationSection posData = statsAccess.getConfigurationSection("positions");
 		if (posData == null) {
 			plugin.getLogger().info("ERROR: Positions YML section not found");
-			return;	//Nothing yet, exit
+			return positions;	//Nothing yet, exit
 		}
 		Set< String > cs = posData.getKeys(false);
 		if (cs == null) {
 			plugin.getLogger().info("ERROR: Couldn't get player keys");
-			return;	//No players found, nothing to do
+			return positions;	//No players found, nothing to do
 		}
 
 		
@@ -138,21 +154,22 @@ public class Players {
 				raw.getDouble("x"), raw.getDouble("y"), raw.getDouble("z"),
 				Float.parseFloat(raw.getString("yaw")), Float.parseFloat(raw.getString("pitch"))
 			);
-			posPlayers.put(uuid, pos);
+			positions.put(uuid, pos);
 		}
 
+		return positions;
 	}
 
 
 	//Save the positions of all players
-	public static void savePositions() {
+	public static void savePositions(String filename, Map< UUID, Location > positions) {
 
-		File statsFile = new File(positionsPath);
+		File statsFile = new File(configPath + filename);
 		FileConfiguration statsAccess = YamlConfiguration.loadConfiguration(statsFile);
 		
 		statsAccess.set("positions", "");
 		
-		for (Map.Entry< UUID , Location > entry : posPlayers.entrySet()) {
+		for (Map.Entry< UUID , Location > entry : positions.entrySet()) {
 			UUID uuid = entry.getKey();
 			Location pos = entry.getValue();
 

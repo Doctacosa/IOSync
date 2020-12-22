@@ -51,13 +51,12 @@ public class IOSync extends JavaPlugin {
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
-		Players.loadPositions();
 
 		getLogger().info("IOSync enabled");
 	}
 
 	public void onDisable() {
-		Players.savePositions();
+		Players.saveAllData();
 
 		getLogger().info("IOSync disabled");
 	}
