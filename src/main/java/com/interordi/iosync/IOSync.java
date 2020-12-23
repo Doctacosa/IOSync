@@ -13,12 +13,14 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.interordi.iosync.listeners.LoginListener;
+import com.interordi.iosync.listeners.SpawnListener;
 import com.interordi.utilities.CommandTargets;
 import com.interordi.utilities.Commands;
 
 public class IOSync extends JavaPlugin {
 
 	LoginListener thisLoginListener;
+	SpawnListener thisSpawnListener;
 
 	private boolean bungeeInit = false;
 
@@ -50,6 +52,7 @@ public class IOSync extends JavaPlugin {
 		serverPath = "./" + serverPath + "/playerdata/";
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
+		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
 
 		getLogger().info("IOSync enabled");

@@ -26,7 +26,9 @@ public class Players {
 	private static String configPath = "plugins/IOSync/";
 
 	private static String positionsFile = "positions.yml";
+	private static String spawnsFile = "spawns.yml";
 	private static Map< UUID, Location > posPlayers;
+	private static Map< UUID, Location > spawnsPlayers;
 	
 	
 	public static void init(IOSync plugin, String storagePath, String serverPath) {
@@ -41,12 +43,14 @@ public class Players {
 	//Load all the data from files
 	public static void loadAllData() {
 		posPlayers = loadPositions(positionsFile);
+		spawnsPlayers = loadPositions(spawnsFile);
 	}
 
 
 	//Save all the data to files
 	public static void saveAllData() {
 		savePositions(positionsFile, posPlayers);
+		savePositions(spawnsFile, spawnsPlayers);
 	}
 
 
@@ -135,7 +139,7 @@ public class Players {
 		
 		ConfigurationSection posData = statsAccess.getConfigurationSection("positions");
 		if (posData == null) {
-			plugin.getLogger().info("ERROR: Positions YML section not found");
+			plugin.getLogger().info("ERROR: Positions YML section in " + filename + " not found");
 			return positions;	//Nothing yet, exit
 		}
 		Set< String > cs = posData.getKeys(false);
@@ -181,7 +185,7 @@ public class Players {
 				statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
 				statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
 			} catch (NullPointerException e) {
-				System.out.println("Failed to save the position for " + uuid.toString());
+				System.out.println("Failed to save the position in  " + filename + " for " + uuid.toString());
 			}
 		}
 		
@@ -198,10 +202,20 @@ public class Players {
 		posPlayers.put(player.getUniqueId(), player.getLocation());
 	}
 
-
 	//Get a player's position
 	public static Location getPlayerPosition(UUID uuid) {
 		return posPlayers.get(uuid);
+	}
+
+	
+	//Set a player's spawn
+	public static void setPlayerSpawn(Player player) {
+		spawnsPlayers.put(player.getUniqueId(), player.getLocation());
+	}
+
+	//Get a player's spawn
+	public static Location getPlayerSpawn(UUID uuid) {
+		return spawnsPlayers.get(uuid);
 	}
 	
 }
