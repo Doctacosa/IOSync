@@ -14,8 +14,8 @@ import java.util.Properties;
 
 import com.interordi.iosync.listeners.LoginListener;
 import com.interordi.iosync.listeners.SpawnListener;
-import com.interordi.utilities.CommandTargets;
-import com.interordi.utilities.Commands;
+import com.interordi.iosync.utilities.CommandTargets;
+import com.interordi.iosync.utilities.Commands;
 
 public class IOSync extends JavaPlugin {
 

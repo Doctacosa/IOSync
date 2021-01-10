@@ -1,4 +1,4 @@
-package com.interordi.utilities;
+package com.interordi.iosync.utilities;
 
 import java.util.Collection;
 import java.util.Collections;
