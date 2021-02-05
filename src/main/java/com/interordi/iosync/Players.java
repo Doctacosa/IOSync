@@ -29,6 +29,8 @@ public class Players {
 	private static String spawnsFile = "spawns.yml";
 	private static Map< UUID, Location > posPlayers;
 	private static Map< UUID, Location > spawnsPlayers;
+
+	private static boolean saving = false;
 	
 	
 	public static void init(IOSync plugin, String storagePath, String serverPath) {
@@ -49,8 +51,19 @@ public class Players {
 
 	//Save all the data to files
 	public static void saveAllData() {
-		savePositions(positionsFile, posPlayers);
-		savePositions(spawnsFile, spawnsPlayers);
+		//No need to save if we're already saving
+		if (saving)
+			return;
+		
+		saving = true;
+
+		//Run on its own thread to avoid holding up the server
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			savePositions(positionsFile, posPlayers);
+			savePositions(spawnsFile, spawnsPlayers);
+
+			saving = false;
+		});
 	}
 
 
