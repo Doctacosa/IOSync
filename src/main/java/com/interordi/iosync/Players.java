@@ -51,19 +51,32 @@ public class Players {
 
 	//Save all the data to files
 	public static void saveAllData() {
+		saveAllData(false);
+	}
+
+	public static void saveAllData(boolean instant) {
 		//No need to save if we're already saving
 		if (saving)
 			return;
 		
 		saving = true;
 
-		//Run on its own thread to avoid holding up the server
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		if (instant) {
+			//On closing, use the main thread
 			savePositions(positionsFile, posPlayers);
 			savePositions(spawnsFile, spawnsPlayers);
 
 			saving = false;
-		});
+
+		} else {
+			//Run on its own thread to avoid holding up the server
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+				savePositions(positionsFile, posPlayers);
+				savePositions(spawnsFile, spawnsPlayers);
+
+				saving = false;
+			});
+		}
 	}
 
 
