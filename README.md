@@ -11,7 +11,7 @@ One notable exception comes from player positions, which must NOT be shared accr
 
 ## Configuration
 
-`storage-path`: The directory to use to store the players data. If left empty, no synchronisation will happen. Thos can be useful to have the `/switch` method available.
+`storage-path`: The directory to use to store the players data. If left empty, no synchronisation will happen. This can be useful to have the `/switch` method available.
 
 
 ## Commands
