@@ -17,7 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 
-public class Players {
+public class Players implements Runnable {
 
 	private static IOSync plugin;
 	private static String storagePath;
@@ -242,6 +242,12 @@ public class Players {
 	//Get a player's spawn
 	public static Location getPlayerSpawn(UUID uuid) {
 		return spawnsPlayers.get(uuid);
+	}
+
+
+	@Override
+	public void run() {
+		saveAllPlayers();
 	}
 	
 }

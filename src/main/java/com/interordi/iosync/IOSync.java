@@ -55,6 +55,9 @@ public class IOSync extends JavaPlugin {
 		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
 
+		//Save the data on a regular basis
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Players(), 5*60*20L, 5*60*20L);
+
 		getLogger().info("IOSync enabled");
 	}
 
