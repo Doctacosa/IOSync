@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
@@ -21,8 +19,6 @@ public class IOSync extends JavaPlugin {
 
 	LoginListener thisLoginListener;
 	SpawnListener thisSpawnListener;
-
-	private boolean bungeeInit = false;
 
 
 	public void onEnable() {
@@ -54,6 +50,7 @@ public class IOSync extends JavaPlugin {
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
+		Switch.init(this);
 
 		//Save the data on a regular basis
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Players(), 5*60*20L, 5*60*20L);
@@ -129,27 +126,8 @@ public class IOSync extends JavaPlugin {
 				return true;
 			}
 
-
-			//Send the world Switch message to Bungee
-			ByteArrayOutputStream b = new ByteArrayOutputStream();
-			DataOutputStream out = new DataOutputStream(b);
-			try {
-				out.writeUTF("Connect");
-				out.writeUTF(destination);
-			} catch (IOException e) {
-			}
-
-			if (!bungeeInit) {
-				this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-				bungeeInit = true;
-			}
-
-			//Save players so their inventory and metadata is up to date
-			getServer().savePlayers();
-			Players.savePlayer(target);
-			target.sendPluginMessage(this, "BungeeCord", b.toByteArray());
-
-			return true;
+			//Switch.requestSwitch(target, destination);
+			return Switch.executeSwitch(target, destination);
 		}
 
 		return false;
