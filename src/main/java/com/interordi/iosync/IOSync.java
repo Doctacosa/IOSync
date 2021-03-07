@@ -17,8 +17,11 @@ import com.interordi.iosync.utilities.Commands;
 
 public class IOSync extends JavaPlugin {
 
-	LoginListener thisLoginListener;
-	SpawnListener thisSpawnListener;
+	private LoginListener thisLoginListener;
+	private SpawnListener thisSpawnListener;
+	private Switch switchSupport;
+
+	private String apiService;
 
 
 	public void onEnable() {
@@ -32,6 +35,8 @@ public class IOSync extends JavaPlugin {
 			storagePath = "";
 		if (!storagePath.endsWith("/") && !storagePath.endsWith("\\") && !storagePath.isEmpty())
 			storagePath += "/";
+
+		apiService = this.getConfig().getString("api-service", "");
 
 		//Get the location of the playerdata folder
 		String serverPath = "";
@@ -50,7 +55,8 @@ public class IOSync extends JavaPlugin {
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		Players.init(this, storagePath, serverPath);
-		Switch.init(this);
+		
+		switchSupport = new Switch(this);
 
 		//Save the data on a regular basis
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Players(), 5*60*20L, 5*60*20L);
@@ -126,11 +132,18 @@ public class IOSync extends JavaPlugin {
 				return true;
 			}
 
-			//Switch.requestSwitch(target, destination);
-			return Switch.executeSwitch(target, destination);
+			if (!apiService.isEmpty())
+				return switchSupport.requestSwitch(target, destination);
+			else
+				return switchSupport.executeSwitch(target, destination);
 		}
 
 		return false;
 	}
-		
+
+
+	//Get the URL of the API service, if available
+	public String getApiServer() {
+		return apiService;
+	}
 }

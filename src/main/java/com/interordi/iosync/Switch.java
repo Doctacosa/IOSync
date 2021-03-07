@@ -3,53 +3,93 @@ package com.interordi.iosync;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
+import com.interordi.iosync.structs.ServerLoading;
 import com.interordi.iosync.utilities.Http;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class Switch {
+import net.md_5.bungee.api.ChatColor;
 
-	private static IOSync plugin = null;
-	private static boolean bungeeInit = false;
+public class Switch implements Runnable {
+
+	private IOSync plugin = null;
+	private boolean bungeeInit = false;
+	private int timerTask = -1;
+
+	private Map< String, ServerLoading > serversLoading;
+
+	private int loadDuration = 20;
 
 	
-	public static void init(IOSync plugin) {
-		Switch.plugin = plugin;
+	public Switch(IOSync plugin) {
+		this.plugin = plugin;
+		serversLoading = new HashMap< String, ServerLoading >();
 	}
 
 
-	public static boolean requestSwitch(Player player, String server) {
+	public boolean requestSwitch(Player target, String destination) {
 		
-		final String finalUrl = "https://localhost/";
+		//If that server is already loading, add the player and immediately return
+		if (serversLoading.containsKey(destination)) {
+			serversLoading.get(destination).addPlayer(target);
+			target.sendMessage(ChatColor.YELLOW + "Please wait, this world is being prepared. You will be moved automatically when ready.");
+			return true;
+		}
+
+		final String finalUrl = plugin.getApiServer() + "servers/start/?id=" + destination;
 
 		//Run in its own thread
-		new Thread(() -> {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			String responseRaw = Http.readUrl(finalUrl);
 			if (responseRaw.trim().equals("[]"))
 				responseRaw = "{}";
 			
-			JsonElement jsonRoot = JsonParser.parseString(responseRaw);
+			JsonParser jsonParser = new JsonParser();
+			JsonElement jsonRoot = jsonParser.parse(responseRaw);
 			JsonObject jsonObject = jsonRoot.getAsJsonObject();
 			if (jsonObject.has("success")) {
 				String message = jsonObject.get("success").getAsString();
+				Bukkit.getScheduler().runTask(plugin, () -> {
+					if (message.equalsIgnoreCase("Ready")) {
+						//Server is ready, move now
+						executeSwitch(target, destination);
+					} else if (message.equalsIgnoreCase("Loading")) {
+						//Server not ready, display a loading notification
+						target.sendMessage(ChatColor.YELLOW + "Please wait, this world is being prepared. You will be moved automatically when ready.");
+						prepareSwitch(target, destination);
+					}
+				});
 			} else if (jsonObject.has("error")) {
 				String message = jsonObject.get("error").getAsString();
+				Bukkit.getScheduler().runTask(plugin, () -> {
+					if (message.equalsIgnoreCase("Full")) {
+						//RAM usage is maxed out, tell the player to try again later
+						target.sendMessage(ChatColor.YELLOW + "This world is not currently available due to a high server load, try another one and come back later!");
+					} else if (message.equalsIgnoreCase("Unknown server")) {
+						//Unknown server, trying anyway
+						executeSwitch(target, destination);
+					} else if (message.equalsIgnoreCase("Undefined group")) {
+						//Unknown server, trying anyway
+						executeSwitch(target, destination);
+					}
+				});
 			}
-			//	Players.updatePledge(finalUsername, );
-		}).start();
+		});
 
 		return true;
 	}
 
 
 	//Execute a server switch on the given player
-	public static boolean executeSwitch(Player target, String destination) {
+	public boolean executeSwitch(Player target, String destination) {
 		//Send the world Switch message to Bungee
 		ByteArrayOutputStream b = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(b);
@@ -70,5 +110,44 @@ public class Switch {
 		target.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
 
 		return true;
+	}
+
+
+	//Display a loading display
+	public void prepareSwitch(Player target, String destination) {
+		if (timerTask == -1)
+			timerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 1*20L, 1*20L);
+		serversLoading.put(destination, new ServerLoading(target, destination));
+	}
+
+
+	@Override
+	public void run() {
+		//Every second, update display bars and disable finished events
+		Instant now = Instant.now();
+
+		for (String server : serversLoading.keySet()) {
+			ServerLoading serverData = serversLoading.get(server);
+			double elapsed = now.getEpochSecond() - serverData.loading.getEpochSecond();
+
+			if (elapsed >= loadDuration) {
+				serverData.bar.removeAll();
+				serversLoading.remove(server);
+				if (serversLoading.isEmpty()) {
+					Bukkit.getScheduler().cancelTask(timerTask);
+					timerTask = -1;
+				}
+
+				for (Player player : serverData.players) {
+					if (player.isOnline())
+						executeSwitch(player, server);
+				}
+			} else {
+				double progress = elapsed / loadDuration;
+				if (progress >= 0.0 && serverData.bar != null) {
+					serverData.bar.setProgress(progress);
+				}
+			}
+		}
 	}
 }
