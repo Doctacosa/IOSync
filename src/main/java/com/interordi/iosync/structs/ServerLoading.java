@@ -32,11 +32,13 @@ public class ServerLoading {
 
 
 	public void addPlayer(Player player) {
+		this.players.add(player);
 		this.bar.addPlayer(player);
 	}
 
 
 	public void removePlayer(Player player) {
+		this.players.remove(player);
 		this.bar.removePlayer(player);
 	}
 }
