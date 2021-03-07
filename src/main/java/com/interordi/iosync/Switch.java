@@ -36,6 +36,11 @@ public class Switch implements Runnable {
 
 
 	public boolean requestSwitch(Player target, String destination) {
+
+		if (isAlreadySwitching(target)) {
+			target.sendMessage(ChatColor.RED + "You already have a move underway, please wait.");
+			return true;
+		}
 		
 		//If that server is already loading, add the player and immediately return
 		if (serversLoading.containsKey(destination)) {
@@ -120,6 +125,16 @@ public class Switch implements Runnable {
 		if (timerTask == -1)
 			timerTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 1*20L, 1*20L);
 		serversLoading.put(destination, new ServerLoading(target, destination));
+	}
+
+
+	//Check if a player is already waiting for a switch
+	public boolean isAlreadySwitching(Player player) {
+		for (ServerLoading serverData : serversLoading.values()) {
+			if (serverData.players.contains(player))
+				return true;
+		}
+		return false;
 	}
 
 
