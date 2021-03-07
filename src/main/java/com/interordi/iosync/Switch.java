@@ -40,7 +40,8 @@ public class Switch implements Runnable {
 		//If that server is already loading, add the player and immediately return
 		if (serversLoading.containsKey(destination)) {
 			serversLoading.get(destination).addPlayer(target);
-			target.sendMessage(ChatColor.YELLOW + "Please wait, this world is being prepared. You will be moved automatically when ready.");
+			target.sendMessage(ChatColor.YELLOW + "This world is being prepared, you will be moved automatically when ready.");
+			target.sendTitle(ChatColor.WHITE + "Loading...", ChatColor.WHITE + "Please wait!", 10, 100, 10);
 			return true;
 		}
 
@@ -63,7 +64,8 @@ public class Switch implements Runnable {
 						executeSwitch(target, destination);
 					} else if (message.equalsIgnoreCase("Loading")) {
 						//Server not ready, display a loading notification
-						target.sendMessage(ChatColor.YELLOW + "Please wait, this world is being prepared. You will be moved automatically when ready.");
+						target.sendMessage(ChatColor.YELLOW + "This world is being prepared, you will be moved automatically when ready.");
+						target.sendTitle(ChatColor.WHITE + "Loading...", ChatColor.WHITE + "Please wait!", 10, 100, 10);
 						prepareSwitch(target, destination);
 					}
 				});
@@ -139,8 +141,10 @@ public class Switch implements Runnable {
 				}
 
 				for (Player player : serverData.players) {
-					if (player.isOnline())
+					if (player.isOnline()) {
+						player.sendTitle(ChatColor.WHITE + "Switching...", ChatColor.WHITE + "Please wait!", 10, 100, 10);
 						executeSwitch(player, server);
+					}
 				}
 			} else {
 				double progress = elapsed / loadDuration;
