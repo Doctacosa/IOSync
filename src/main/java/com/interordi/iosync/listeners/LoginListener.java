@@ -13,9 +13,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class LoginListener implements Listener {
 
+	IOSync plugin;
 	boolean enablePositionSaving = false;
 	
+	
 	public LoginListener(IOSync plugin, boolean enablePositionSaving) {
+		this.plugin = plugin;
 		this.enablePositionSaving = enablePositionSaving;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
@@ -23,14 +26,14 @@ public class LoginListener implements Listener {
 
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		Players.loadPlayer(event.getPlayer());
+		plugin.getPlayersInst().loadPlayer(event.getPlayer());
 	}
 
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		//Save all players to ensure periodic safety saves
-		Players.saveAllPlayers();
+		plugin.getPlayersInst().saveAllPlayers();
 		//Players.savePlayer(event.getPlayer());
 	}
 
@@ -38,7 +41,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		//On login, return the player to his last position
-		Location pos = Players.getPlayerPosition(event.getPlayer().getUniqueId());
+		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
 		if (pos != null)
 			event.getPlayer().teleport(pos);
 		else if (enablePositionSaving)

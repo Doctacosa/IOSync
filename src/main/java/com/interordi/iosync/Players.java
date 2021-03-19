@@ -19,42 +19,42 @@ import org.bukkit.entity.Player;
 
 public class Players implements Runnable {
 
-	private static IOSync plugin;
-	private static String storagePath;
-	private static String serverPath;
+	private IOSync plugin;
+	private String storagePath;
+	private String serverPath;
 
-	private static String configPath = "plugins/IOSync/";
+	private String configPath = "plugins/IOSync/";
 
-	private static String positionsFile = "positions.yml";
-	private static String spawnsFile = "spawns.yml";
-	private static Map< UUID, Location > posPlayers;
-	private static Map< UUID, Location > spawnsPlayers;
+	private String positionsFile = "positions.yml";
+	private String spawnsFile = "spawns.yml";
+	private Map< UUID, Location > posPlayers;
+	private Map< UUID, Location > spawnsPlayers;
 
-	private static boolean saving = false;
+	private boolean saving = false;
 	
 	
-	public static void init(IOSync plugin, String storagePath, String serverPath) {
-		Players.plugin = plugin;
-		Players.storagePath = storagePath;
-		Players.serverPath = serverPath;
+	public Players(IOSync plugin, String storagePath, String serverPath) {
+		this.plugin = plugin;
+		this.storagePath = storagePath;
+		this.serverPath = serverPath;
 
 		loadAllData();
 	}
 
 
 	//Load all the data from files
-	public static void loadAllData() {
+	public void loadAllData() {
 		posPlayers = loadPositions(positionsFile);
 		spawnsPlayers = loadPositions(spawnsFile);
 	}
 
 
 	//Save all the data to files
-	public static void saveAllData() {
+	public void saveAllData() {
 		saveAllData(false);
 	}
 
-	public static void saveAllData(boolean instant) {
+	public void saveAllData(boolean instant) {
 		//No need to save if we're already saving
 		if (saving)
 			return;
@@ -81,7 +81,7 @@ public class Players implements Runnable {
 
 
 	//Load a player's inventory from storage
-	public static void loadPlayer(Player player) {
+	public void loadPlayer(Player player) {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -102,7 +102,7 @@ public class Players implements Runnable {
 
 
 	//Save a player's inventory to storage
-	public static void savePlayer(Player player) {
+	public void savePlayer(Player player) {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -115,7 +115,7 @@ public class Players implements Runnable {
 
 
 	//Save the data of all players, good for periodic checks
-	public static void saveAllPlayers() {
+	public void saveAllPlayers() {
 
 		//Save positions right away
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -136,7 +136,7 @@ public class Players implements Runnable {
 
 
 	//Save the data of one player
-	public static void saveOnePlayer(Player player) {
+	public void saveOnePlayer(Player player) {
 		setPlayerPosition(player);
 		saveAllData();
 
@@ -156,7 +156,7 @@ public class Players implements Runnable {
 
 
 	//Get the positions of all players
-	public static Map< UUID, Location > loadPositions(String filename) {
+	public Map< UUID, Location > loadPositions(String filename) {
 
 		Map< UUID, Location > positions = new HashMap< UUID, Location >();
 		
@@ -192,7 +192,7 @@ public class Players implements Runnable {
 
 
 	//Save the positions of all players
-	public static void savePositions(String filename, Map< UUID, Location > positions) {
+	public void savePositions(String filename, Map< UUID, Location > positions) {
 
 		File statsFile = new File(configPath + filename);
 		FileConfiguration statsAccess = YamlConfiguration.loadConfiguration(statsFile);
@@ -224,23 +224,23 @@ public class Players implements Runnable {
 
 
 	//Set a player's position
-	public static void setPlayerPosition(Player player) {
+	public void setPlayerPosition(Player player) {
 		posPlayers.put(player.getUniqueId(), player.getLocation());
 	}
 
 	//Get a player's position
-	public static Location getPlayerPosition(UUID uuid) {
+	public Location getPlayerPosition(UUID uuid) {
 		return posPlayers.get(uuid);
 	}
 
 	
 	//Set a player's spawn
-	public static void setPlayerSpawn(Player player) {
+	public void setPlayerSpawn(Player player) {
 		spawnsPlayers.put(player.getUniqueId(), player.getLocation());
 	}
 
 	//Get a player's spawn
-	public static Location getPlayerSpawn(UUID uuid) {
+	public Location getPlayerSpawn(UUID uuid) {
 		return spawnsPlayers.get(uuid);
 	}
 

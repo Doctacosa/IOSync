@@ -19,6 +19,7 @@ public class IOSync extends JavaPlugin {
 
 	private LoginListener thisLoginListener;
 	private SpawnListener thisSpawnListener;
+	private Players thisPlayers;
 	private Switch switchSupport;
 
 	private String apiService;
@@ -54,18 +55,19 @@ public class IOSync extends JavaPlugin {
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
-		Players.init(this, storagePath, serverPath);
+		thisPlayers = new Players(this, storagePath, serverPath);
 		
 		switchSupport = new Switch(this);
 
 		//Save the data on a regular basis
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Players(), 5*60*20L, 5*60*20L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, thisPlayers, 5*60*20L, 5*60*20L);
 
 		getLogger().info("IOSync enabled");
 	}
 
+
 	public void onDisable() {
-		Players.saveAllData(true);
+		thisPlayers.saveAllData(true);
 
 		getLogger().info("IOSync disabled");
 	}
@@ -145,5 +147,10 @@ public class IOSync extends JavaPlugin {
 	//Get the URL of the API service, if available
 	public String getApiServer() {
 		return apiService;
+	}
+
+
+	public Players getPlayersInst() {
+		return thisPlayers;
 	}
 }

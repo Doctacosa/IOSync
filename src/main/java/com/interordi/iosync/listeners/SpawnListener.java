@@ -13,9 +13,12 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class SpawnListener implements Listener {
 
+	IOSync plugin;
 	boolean enablePositionSaving = false;
 	
+	
 	public SpawnListener(IOSync plugin, boolean enablePositionSaving) {
+		this.plugin = plugin;
 		this.enablePositionSaving = enablePositionSaving;
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 	}
@@ -23,19 +26,19 @@ public class SpawnListener implements Listener {
 
 	@EventHandler
 	public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-		Players.setPlayerSpawn(event.getPlayer());
+		plugin.getPlayersInst().setPlayerSpawn(event.getPlayer());
 	}
 
 
 	@EventHandler
 	public void onPlayerBedLeave(PlayerBedLeaveEvent event) {
-		Players.setPlayerSpawn(event.getPlayer());
+		plugin.getPlayersInst().setPlayerSpawn(event.getPlayer());
 	}
 
 
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		Location respawnLocation = Players.getPlayerSpawn(event.getPlayer().getUniqueId());
+		Location respawnLocation = plugin.getPlayersInst().getPlayerSpawn(event.getPlayer().getUniqueId());
 		if (respawnLocation != null)
 			event.setRespawnLocation(respawnLocation);
 	}

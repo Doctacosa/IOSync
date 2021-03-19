@@ -113,7 +113,7 @@ public class Switch implements Runnable {
 
 		//Save players so their inventory and metadata is up to date
 		Bukkit.getServer().savePlayers();
-		Players.savePlayer(target);
+		plugin.getPlayersInst().savePlayer(target);
 		target.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
 
 		return true;
