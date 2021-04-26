@@ -59,7 +59,13 @@ public class Switch implements Runnable {
 				responseRaw = "{}";
 			
 			JsonParser jsonParser = new JsonParser();
-			JsonElement jsonRoot = jsonParser.parse(responseRaw);
+			JsonElement jsonRoot = null;
+			try {
+				jsonRoot = jsonParser.parse(responseRaw);
+			} catch (com.google.gson.JsonSyntaxException e) {
+				System.err.println("Invalid JSON: " + responseRaw);
+				return;
+			}
 			JsonObject jsonObject = jsonRoot.getAsJsonObject();
 			if (jsonObject.has("success")) {
 				String message = jsonObject.get("success").getAsString();
