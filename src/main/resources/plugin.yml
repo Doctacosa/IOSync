@@ -7,3 +7,7 @@ commands:
   switch:
     description: Move a player to the specified server
     usage: /switch server player
+  sswitch:
+    description: Move a player to the specified server, silently
+    usage: /sswitch server player
+    permission: iosync.switch

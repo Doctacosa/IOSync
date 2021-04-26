@@ -99,7 +99,7 @@ public class IOSync extends JavaPlugin {
 	//Actually run the entered command
 	public boolean runCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
-		if (cmd.getName().equalsIgnoreCase("switch")) {
+		if (cmd.getName().equalsIgnoreCase("switch") || cmd.getName().equalsIgnoreCase("sswitch")) {
 
 			if (!sender.hasPermission("iosync.switch")) {
 				sender.sendMessage("§cYou are not allowed to use this command.");
@@ -133,6 +133,12 @@ public class IOSync extends JavaPlugin {
 				sender.sendMessage("§cTarget player not found!");
 				return true;
 			}
+
+			//Emit silent switch signal
+			if (cmd.getName().equalsIgnoreCase("sswitch")) {
+				getLogger().info("|IOCMD|sswitch " + target.getDisplayName());
+			}
+
 
 			if (!apiService.isEmpty())
 				return switchSupport.requestSwitch(target, destination);
