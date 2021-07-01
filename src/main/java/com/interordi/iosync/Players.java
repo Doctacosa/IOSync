@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -71,8 +72,12 @@ public class Players implements Runnable {
 		} else {
 			//Run on its own thread to avoid holding up the server
 			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-				savePositions(positionsFile, posPlayers);
-				savePositions(spawnsFile, spawnsPlayers);
+				try {
+					savePositions(positionsFile, posPlayers);
+					savePositions(spawnsFile, spawnsPlayers);
+				} catch (ConcurrentModificationException e) {
+					//Ignore, next save will get them
+				}
 
 				saving = false;
 			});
@@ -192,7 +197,7 @@ public class Players implements Runnable {
 
 
 	//Save the positions of all players
-	public void savePositions(String filename, Map< UUID, Location > positions) {
+	public void savePositions(String filename, Map< UUID, Location > positions) throws ConcurrentModificationException {
 
 		File statsFile = new File(configPath + filename);
 		FileConfiguration statsAccess = YamlConfiguration.loadConfiguration(statsFile);
