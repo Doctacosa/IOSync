@@ -62,10 +62,16 @@ public class Players implements Runnable {
 		
 		saving = true;
 
+		//Save using copies to avoid a ConcurrentModificationException
+		Map< UUID, Location > posPlayersCopy = new HashMap< UUID, Location >();
+		posPlayersCopy.putAll(posPlayers);
+		Map< UUID, Location > spawnsPlayersCopy = new HashMap< UUID, Location >();
+		spawnsPlayersCopy.putAll(spawnsPlayers);
+
 		if (instant) {
 			//On closing, use the main thread
-			savePositions(positionsFile, posPlayers);
-			savePositions(spawnsFile, spawnsPlayers);
+			savePositions(positionsFile, posPlayersCopy);
+			savePositions(spawnsFile, spawnsPlayersCopy);
 
 			saving = false;
 
@@ -73,8 +79,8 @@ public class Players implements Runnable {
 			//Run on its own thread to avoid holding up the server
 			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 				try {
-					savePositions(positionsFile, posPlayers);
-					savePositions(spawnsFile, spawnsPlayers);
+					savePositions(positionsFile, posPlayersCopy);
+					savePositions(spawnsFile, spawnsPlayersCopy);
 				} catch (ConcurrentModificationException e) {
 					//Ignore, next save will get them
 				}
