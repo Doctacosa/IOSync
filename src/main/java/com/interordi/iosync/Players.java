@@ -28,8 +28,10 @@ public class Players implements Runnable {
 
 	private String positionsFile = "positions.yml";
 	private String spawnsFile = "spawns.yml";
+	private String bedsFile = "beds.yml";
 	private Map< UUID, Location > posPlayers;
 	private Map< UUID, Location > spawnsPlayers;
+	private Map< UUID, Location > bedsPlayers;
 
 	private boolean saving = false;
 	
@@ -47,6 +49,7 @@ public class Players implements Runnable {
 	public void loadAllData() {
 		posPlayers = loadPositions(positionsFile);
 		spawnsPlayers = loadPositions(spawnsFile);
+		bedsPlayers = loadPositions(bedsFile);
 	}
 
 
@@ -67,11 +70,14 @@ public class Players implements Runnable {
 		posPlayersCopy.putAll(posPlayers);
 		Map< UUID, Location > spawnsPlayersCopy = new HashMap< UUID, Location >();
 		spawnsPlayersCopy.putAll(spawnsPlayers);
+		Map< UUID, Location > bedsPlayersCopy = new HashMap< UUID, Location >();
+		bedsPlayersCopy.putAll(bedsPlayers);
 
 		if (instant) {
 			//On closing, use the main thread
 			savePositions(positionsFile, posPlayersCopy);
 			savePositions(spawnsFile, spawnsPlayersCopy);
+			savePositions(bedsFile, bedsPlayersCopy);
 
 			saving = false;
 
@@ -81,6 +87,7 @@ public class Players implements Runnable {
 				try {
 					savePositions(positionsFile, posPlayersCopy);
 					savePositions(spawnsFile, spawnsPlayersCopy);
+					savePositions(bedsFile, bedsPlayersCopy);
 				} catch (ConcurrentModificationException e) {
 					//Ignore, next save will get them
 				}
@@ -246,13 +253,33 @@ public class Players implements Runnable {
 
 	
 	//Set a player's spawn
-	public void setPlayerSpawn(Player player) {
+	public void setPlayerSpawn(Player player, Location bed) {
 		spawnsPlayers.put(player.getUniqueId(), player.getLocation());
+		bedsPlayers.put(player.getUniqueId(), bed);
 	}
 
 	//Get a player's spawn
 	public Location getPlayerSpawn(UUID uuid) {
 		return spawnsPlayers.get(uuid);
+	}
+
+
+	//Handle a bed being broken
+	public void bedBroken(Location broken) {
+		for (Map.Entry< UUID , Location > entry : bedsPlayers.entrySet()) {
+			UUID uuid = entry.getKey();
+			Location bed = entry.getValue();
+
+			if (bed.getWorld() == broken.getWorld() &&
+				bed.getX() == broken.getX() &&
+				bed.getY() == broken.getY() &&
+				bed.getZ() == broken.getZ()) {
+
+				//A spawn bed has been broken, nuke the player's spawn position
+				bedsPlayers.remove(uuid);
+				spawnsPlayers.remove(uuid);
+			}
+		}
 	}
 
 
