@@ -266,7 +266,10 @@ public class Players implements Runnable {
 
 	//Handle a bed being broken
 	public void bedBroken(Location broken) {
-		for (Map.Entry< UUID , Location > entry : bedsPlayers.entrySet()) {
+		Map< UUID, Location > bedsPlayersCopy = new HashMap< UUID, Location >();
+		bedsPlayersCopy.putAll(bedsPlayers);
+
+		for (Map.Entry< UUID , Location > entry : bedsPlayersCopy.entrySet()) {
 			UUID uuid = entry.getKey();
 			Location bed = entry.getValue();
 
