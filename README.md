@@ -1,5 +1,7 @@
 # IOSync
 
+![Logo](https://www.interordi.com/images/plugins/iosync-96.png)
+
 This Bukkit plugin synchronizes a player's data across multiple Minecraft server instances. This is especially useful in a BungeeCord setting, where players want a continuous experience moving between multiple server instances.
 
 This is done by copying a player's data file (`world/playerdata/UUID.dat`) to a common directory when they disconnect. On reconnection, on the same server or another, the file is copied in place before the server's processes try to read from it. Effectively, the player's data travels with them.
