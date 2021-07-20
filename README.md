@@ -11,6 +11,14 @@ Multiple groups of synchronization on the same network can be done; for example,
 One notable exception comes from player positions, which must NOT be shared across servers. As such, these are stored separately in data files.
 
 
+## Installation
+
+1. Download the plugin and place it in your plugins/ directory.
+2. Start and stop the server to generate the configuration file.
+3. Edit config.yml to set storage-path, which is a directory path. Servers with the same storage-path value will share their player data.
+4. Start your server. That's it, you're done!
+
+
 ## Configuration
 
 `storage-path`: The directory to use to store the players data. Servers with the same storage-path value will share their player data. If left empty, no synchronisation will happen. This can be useful to have the `/switch` method available.
