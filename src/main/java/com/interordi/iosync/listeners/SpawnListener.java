@@ -92,7 +92,10 @@ public class SpawnListener implements Listener {
 		if (respawnLocation != null)
 			event.setRespawnLocation(respawnLocation);
 		else
-			event.setRespawnLocation(event.getPlayer().getWorld().getSpawnLocation());
+			event.setRespawnLocation(plugin.getServer().getWorlds().get(0).getSpawnLocation());
+		
+		//For reference, current world position:
+		//event.setRespawnLocation(event.getPlayer().getWorld().getSpawnLocation());
 	}
 
 }
