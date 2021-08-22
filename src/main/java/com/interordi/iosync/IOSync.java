@@ -144,6 +144,13 @@ public class IOSync extends JavaPlugin {
 				return switchSupport.requestSwitch(target, destination);
 			else
 				return switchSupport.executeSwitch(target, destination);
+
+		} else if (cmd.getName().equalsIgnoreCase("lobby")) {
+
+			Player target = (Player)sender;
+			String lobby = "lobby";
+
+			return switchSupport.executeSwitch(target, lobby);
 		}
 
 		return false;

@@ -11,3 +11,6 @@ commands:
     description: Move a player to the specified server, silently
     usage: /sswitch server player
     permission: iosync.switch
+  lobby:
+    description: Go to the server's lobby world
+    usage: /lobby
