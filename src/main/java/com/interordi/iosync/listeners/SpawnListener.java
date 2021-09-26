@@ -2,6 +2,7 @@ package com.interordi.iosync.listeners;
 
 import com.interordi.iosync.IOSync;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
@@ -76,7 +77,7 @@ public class SpawnListener implements Listener {
 					loc.add(1, 0, 0);
 				break;
 				default:
-					System.err.println("Impossible bed direction: " + bedData.getFacing());
+					Bukkit.getLogger().warning("Impossible bed direction: " + bedData.getFacing());
 				break;
 			}
 		}

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.BlockCommandSender;
@@ -67,7 +68,7 @@ public class Commands {
 					RemoteConsoleCommandSender source = (RemoteConsoleCommandSender)sender;
 				
 				} else {
-					System.out.println("Source not found!!");
+					Bukkit.getLogger().warning("Source not found!!");
 					return null;
 				}
 				

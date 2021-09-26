@@ -111,8 +111,8 @@ public class Players implements Runnable {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
-				System.out.println("ERROR: Failed to copy file from storage");
-				System.out.println("Reason: " + e.getMessage());
+				Bukkit.getLogger().severe("ERROR: Failed to copy file from storage");
+				Bukkit.getLogger().severe("Reason: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -165,8 +165,8 @@ public class Players implements Runnable {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
-				System.out.println("ERROR: Failed to write file to storage");
-				System.out.println("Reason: " + e.getMessage());
+				Bukkit.getLogger().severe("ERROR: Failed to write file to storage");
+				Bukkit.getLogger().severe("Reason: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -229,7 +229,7 @@ public class Players implements Runnable {
 				statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
 				statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
 			} catch (NullPointerException e) {
-				System.out.println("Failed to save the position in  " + filename + " for " + uuid.toString());
+				Bukkit.getLogger().severe("Failed to save the position in  " + filename + " for " + uuid.toString());
 			}
 		}
 		

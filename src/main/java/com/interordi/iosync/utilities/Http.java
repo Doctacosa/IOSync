@@ -8,6 +8,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+import org.bukkit.Bukkit;
+
 public class Http {
 	
 	//Read the content of a remote page
@@ -17,7 +19,7 @@ public class Http {
 		try {
 			realUrl = new URL(url);
 		} catch (MalformedURLException e) {
-			System.out.println("MALFORMED URL: " + url);
+			Bukkit.getLogger().warning("MALFORMED URL: " + url);
 			e.printStackTrace();
 			return "";
 		}
@@ -45,10 +47,10 @@ public class Http {
 			
 			//int code = connection.getResponseCode();
 		} catch (SocketTimeoutException e) {
-			System.out.println("TIMEOUT reading remote page " + url.toString());
+			Bukkit.getLogger().warning("TIMEOUT reading remote page " + url.toString());
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("UNEXPECTED ERROR reading remote page " + url.toString());
+			Bukkit.getLogger().warning("UNEXPECTED ERROR reading remote page " + url.toString());
 			e.printStackTrace();
 		} finally {
 			try {

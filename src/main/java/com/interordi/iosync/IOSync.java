@@ -1,5 +1,6 @@
 package com.interordi.iosync;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,7 +49,7 @@ public class IOSync extends JavaPlugin {
 			is.close();
 			serverPath = props.getProperty("level-name");
 		} catch (IOException e) {
-			System.out.println("ERROR: Couldn't read level-name, defaulting to 'world'");
+			Bukkit.getLogger().warning("ERROR: Couldn't read level-name, defaulting to 'world'");
 			serverPath = "world";
 		}
 		serverPath = "./" + serverPath + "/playerdata/";
