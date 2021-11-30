@@ -5,7 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -149,7 +151,10 @@ public class Switch implements Runnable {
 		//Every second, update display bars and disable finished events
 		Instant now = Instant.now();
 
-		for (String server : serversLoading.keySet()) {
+		Set< String > serversLoadingCopy = new HashSet< String >();
+		serversLoadingCopy.addAll(serversLoading.keySet());
+
+		for (String server : serversLoadingCopy) {
 			ServerLoading serverData = serversLoading.get(server);
 			double elapsed = now.getEpochSecond() - serverData.loading.getEpochSecond();
 
