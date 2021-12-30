@@ -66,8 +66,14 @@ public class Switch implements Runnable {
 				jsonRoot = jsonParser.parse(responseRaw);
 			} catch (com.google.gson.JsonSyntaxException e) {
 				Bukkit.getLogger().warning("Invalid JSON: " + responseRaw);
+			}
+
+			//On invalid or empty JSON, try to directly change
+			if (jsonRoot == null) {
+				executeSwitch(target, destination);
 				return;
 			}
+
 			JsonObject jsonObject = jsonRoot.getAsJsonObject();
 			if (jsonObject.has("success")) {
 				String message = jsonObject.get("success").getAsString();
