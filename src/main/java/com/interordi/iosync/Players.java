@@ -128,6 +128,7 @@ public class Players implements Runnable {
 		//Avoid item duping
 		plugin.getServer().savePlayers();
 
+		saveAllData();
 		saveOnePlayer(player);
 	}
 
@@ -155,9 +156,6 @@ public class Players implements Runnable {
 
 	//Save the data of one player
 	public void saveOnePlayer(Player player) {
-		setPlayerPosition(player);
-		saveAllData();
-
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
 
