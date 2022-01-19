@@ -54,11 +54,11 @@ public class Players implements Runnable {
 
 
 	//Save all the data to files
-	public void saveAllData() {
-		saveAllData(false);
+	public void saveAllPositions() {
+		saveAllPositions(false);
 	}
 
-	public void saveAllData(boolean instant) {
+	public void saveAllPositions(boolean instant) {
 		//No need to save if we're already saving
 		if (saving)
 			return;
@@ -120,7 +120,7 @@ public class Players implements Runnable {
 
 
 	//Save a player's inventory to storage
-	public void savePlayer(Player player) {
+	public void savePlayerData(Player player) {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -128,8 +128,8 @@ public class Players implements Runnable {
 		//Avoid item duping
 		plugin.getServer().savePlayers();
 
-		saveAllData();
-		saveOnePlayer(player);
+		saveAllPositions();
+		savePlayerInventory(player);
 	}
 
 
@@ -140,7 +140,7 @@ public class Players implements Runnable {
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
 			setPlayerPosition(player);
 		}
-		saveAllData();
+		saveAllPositions();
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -149,13 +149,13 @@ public class Players implements Runnable {
 		plugin.getServer().savePlayers();
 
 		for (Player player : plugin.getServer().getOnlinePlayers()) {
-			saveOnePlayer(player);
+			savePlayerInventory(player);
 		}
 	}
 
 
 	//Save the data of one player
-	public void saveOnePlayer(Player player) {
+	public void savePlayerInventory(Player player) {
 		File source = new File(serverPath + player.getUniqueId() + ".dat");
 		File dest = new File(storagePath + player.getUniqueId() + ".dat");
 

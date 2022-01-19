@@ -34,7 +34,7 @@ public class LoginListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		//Save all players to ensure periodic safety saves
 		plugin.getPlayersInst().saveAllPlayers();
-		//Players.savePlayer(event.getPlayer());
+		//Players.savePlayerData(event.getPlayer());
 	}
 
 

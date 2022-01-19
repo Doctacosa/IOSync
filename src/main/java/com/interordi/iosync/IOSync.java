@@ -68,7 +68,7 @@ public class IOSync extends JavaPlugin {
 
 
 	public void onDisable() {
-		thisPlayers.saveAllData(true);
+		thisPlayers.saveAllPositions(true);
 
 		getLogger().info("IOSync disabled");
 	}
