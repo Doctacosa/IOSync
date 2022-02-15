@@ -11,24 +11,32 @@ Multiple groups of synchronization on the same network can be done; for example,
 One notable exception comes from player positions, which must NOT be shared across servers. As such, these are stored separately in data files.
 
 
-## Installation
+## Setup guide
 
-1. Download the plugin and place it in your plugins/ directory.
+1. Download the plugin and place it in the `plugins/` directory.
 2. Start and stop the server to generate the configuration file.
-3. Edit config.yml to set storage-path, which is a directory path. Servers with the same storage-path value will share their player data.
+3. Edit `config.yml` to set `storage-path`, which is a directory path. Servers with the same `storage-path` value will share their player data. Make sure that the directory exists and is writable!
 4. Start your server. That's it, you're done!
+
+
+## Current limitations
+
+* Respawn anchors don't work.
+* Stray chunks outside the world border might get generated.
+* All game servers must be in the same file system (multiple hardware or separate Docker instances not supported).
+* On first join after installation, players might be sent to spawn. This can happen only once per player.
 
 
 ## Configuration
 
-`storage-path`: The directory to use to store the players data. Servers with the same storage-path value will share their player data. If left empty, no synchronisation will happen. This can be useful to have the `/switch` method available.
+`storage-path`: The directory to use to store the players data. Servers with the same storage-path value will share their player data. If left empty, no synchronisation will happen. This can be useful to have the `/switch` method available.  
 
 
 ## Commands
 
-`switch`: Used by authorized players to change servers. This has to be used instead of BungeeCord's `/server` to ensure that the player's data is properly saved before the disconnection registers.
+`/switch`: Used by authorized players to change servers. This has to be used instead of BungeeCord's `/server` to ensure that the player's data is properly saved before the disconnection registers.  
 
 
 ## Permissions
 
-`iosync.switch`: Access to the server switch command.
+`iosync.switch`: Access to the server switch command.  
