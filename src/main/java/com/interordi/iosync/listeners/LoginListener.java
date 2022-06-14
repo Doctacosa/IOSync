@@ -40,11 +40,13 @@ public class LoginListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		/*
 		//On login, return the player to his last position
 		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
 		if (pos != null)
 			event.getPlayer().teleport(pos);
 		else if (enablePositionSaving)
 			event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+		*/
 	}
 }

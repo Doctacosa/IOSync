@@ -17,6 +17,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import de.tr7zw.changeme.nbtapi.NBTFile;
+import de.tr7zw.changeme.nbtapi.NBTList;
+
 
 public class Players implements Runnable {
 
@@ -110,6 +113,46 @@ public class Players implements Runnable {
 		if (Files.exists(source.toPath())) {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				/*
+				 * TODO: Set player position within the copied file
+				 * 1. Open file
+				 * 2. Set coordinates as in below
+				 * 3. Save file
+				 * 4. Eliminate use of PlayerJoinEvent
+				 */
+				//https://github.com/tr7zw/Item-NBT-API
+
+				NBTFile playerData = new NBTFile(dest);
+
+				int air = playerData.getInteger("Air");
+				System.out.println("Air: " + air);
+
+				//Set position
+				/*
+				NBTCompound posTag = playerData.getCompound("Pos");
+				posTag.getFloatList()
+				*/
+				NBTList< Double > posTag = playerData.getDoubleList("Pos");
+				posTag.clear();
+				posTag.add(10d);
+				posTag.add(20d);
+				posTag.add(30d);
+				playerData.setDouble("potato", 99d);
+
+				//TODO: Set rotation
+
+				playerData.save();
+				//playerData.addCompound("Pos");
+				
+				//Copy with changes
+				/*
+				NBTFile fileTest = new NBTFile(new File("./test.nbt"));
+				fileTest.mergeCompound(playerData);
+				//fileTest.mergeCompound(posTag);				
+				fileTest.save();
+				*/
+
 			} catch (IOException e) {
 				Bukkit.getLogger().severe("ERROR: Failed to copy file from storage");
 				Bukkit.getLogger().severe("Reason: " + e.getMessage());
