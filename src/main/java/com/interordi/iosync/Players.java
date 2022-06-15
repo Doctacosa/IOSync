@@ -103,6 +103,10 @@ public class Players implements Runnable {
 
 	//Load a player's inventory from storage
 	public void loadPlayer(Player player) {
+		loadPlayer(player, false);
+	}
+
+	public void loadPlayer(Player player, boolean enablePositionSaving) {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
@@ -114,44 +118,39 @@ public class Players implements Runnable {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-				/*
-				 * TODO: Set player position within the copied file
-				 * 1. Open file
-				 * 2. Set coordinates as in below
-				 * 3. Save file
-				 * 4. Eliminate use of PlayerJoinEvent
-				 */
-				//https://github.com/tr7zw/Item-NBT-API
+				//Get the player's position, or default on first spawn
+				Location posPlayer = plugin.getPlayersInst().getPlayerPosition(player.getUniqueId());
+				if (posPlayer == null && enablePositionSaving)
+					posPlayer = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
+		
+				//NBT manipulation: https://github.com/tr7zw/Item-NBT-API
 
-				NBTFile playerData = new NBTFile(dest);
+				if (posPlayer != null) {
+					NBTFile playerData = new NBTFile(dest);
 
-				int air = playerData.getInteger("Air");
-				System.out.println("Air: " + air);
+					//Set position
+					NBTList< Double > posTag = playerData.getDoubleList("Pos");
+					posTag.clear();
+					posTag.add(posPlayer.getX());
+					posTag.add(posPlayer.getY());
+					posTag.add(posPlayer.getZ());
 
-				//Set position
-				/*
-				NBTCompound posTag = playerData.getCompound("Pos");
-				posTag.getFloatList()
-				*/
-				NBTList< Double > posTag = playerData.getDoubleList("Pos");
-				posTag.clear();
-				posTag.add(10d);
-				posTag.add(20d);
-				posTag.add(30d);
-				playerData.setDouble("potato", 99d);
+					//Set rotation
+					NBTList< Float > rotTag = playerData.getFloatList("Rotation");
+					rotTag.clear();
+					rotTag.add(posPlayer.getYaw());
+					rotTag.add(posPlayer.getPitch());
+					
+					playerData.save();
 
-				//TODO: Set rotation
-
-				playerData.save();
-				//playerData.addCompound("Pos");
-				
-				//Copy with changes
-				/*
-				NBTFile fileTest = new NBTFile(new File("./test.nbt"));
-				fileTest.mergeCompound(playerData);
-				//fileTest.mergeCompound(posTag);				
-				fileTest.save();
-				*/
+					//Copy with changes
+					/*
+					NBTFile fileTest = new NBTFile(new File("./test.nbt"));
+					fileTest.mergeCompound(playerData);
+					//fileTest.mergeCompound(posTag);
+					fileTest.save();
+					*/
+				}
 
 			} catch (IOException e) {
 				Bukkit.getLogger().severe("ERROR: Failed to copy file from storage");
