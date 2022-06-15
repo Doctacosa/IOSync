@@ -22,7 +22,6 @@ One notable exception comes from player positions, which must NOT be shared acro
 ## Current limitations
 
 * Respawn anchors don't work.
-* Stray chunks outside the world border might get generated.
 * All game servers must be in the same file system (multiple hardware or separate Docker instances not supported).
 * On first join after installation, players might be sent to spawn. This can happen only once per player.
 
