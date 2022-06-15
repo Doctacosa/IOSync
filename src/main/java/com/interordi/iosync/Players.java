@@ -118,10 +118,9 @@ public class Players implements Runnable {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-				//Get the player's position, or default on first spawn
-				Location posPlayer = plugin.getPlayersInst().getPlayerPosition(player.getUniqueId());
-				if (posPlayer == null && enablePositionSaving)
-					posPlayer = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
+				//Reset the player's position to spawn
+				//On actual join, will teleport to last position
+				Location posPlayer = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
 		
 				//NBT manipulation: https://github.com/tr7zw/Item-NBT-API
 
@@ -140,6 +139,9 @@ public class Players implements Runnable {
 					rotTag.clear();
 					rotTag.add(posPlayer.getYaw());
 					rotTag.add(posPlayer.getPitch());
+
+					//Send to overworld
+					playerData.setString("Dimension", "minecraft:overworld");
 					
 					playerData.save();
 
