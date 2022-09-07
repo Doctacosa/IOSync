@@ -162,6 +162,7 @@ public class Players implements Runnable {
 					NBTFile playerData = new NBTFile(dest);
 
 					//Set bed positions
+					playerData.setString("SpawnDimension", bed.getWorld().getName());
 					playerData.setInteger("SpawnX", bed.getBlockX());
 					playerData.setInteger("SpawnY", bed.getBlockY());
 					playerData.setInteger("SpawnZ", bed.getBlockZ());
@@ -224,10 +225,10 @@ public class Players implements Runnable {
 
 				//Read the bed position as set in the file
 				NBTFile playerData = new NBTFile(dest);
+				World world = plugin.getServer().getWorld(playerData.getString("SpawnDimension"));
 				int spawnX = playerData.getInteger("SpawnX");
 				int spawnY = playerData.getInteger("SpawnY");
 				int spawnZ = playerData.getInteger("SpawnZ");
-				World world = plugin.getServer().getWorlds().get(0).getSpawnLocation().getWorld();
 				Location bed = new Location(world, spawnX, spawnY, spawnZ);
 
 				plugin.getPlayersInst().setPlayerBed(player, bed);
