@@ -12,14 +12,12 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.interordi.iosync.listeners.LoginListener;
-import com.interordi.iosync.listeners.SpawnListener;
 import com.interordi.iosync.utilities.CommandTargets;
 import com.interordi.iosync.utilities.Commands;
 
 public class IOSync extends JavaPlugin {
 
 	private LoginListener thisLoginListener;
-	private SpawnListener thisSpawnListener;
 	private Players thisPlayers;
 	private Switch switchSupport;
 
@@ -55,7 +53,6 @@ public class IOSync extends JavaPlugin {
 		serverPath = "./" + serverPath + "/playerdata/";
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
-		thisSpawnListener = new SpawnListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisPlayers = new Players(this, storagePath, serverPath);
 		
 		switchSupport = new Switch(this);

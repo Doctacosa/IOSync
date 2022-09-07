@@ -32,6 +32,9 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		//Save all players to ensure periodic safety saves
+		Location pos = event.getPlayer().getBedSpawnLocation();
+		plugin.getPlayersInst().setPlayerSpawn(event.getPlayer(), pos);
+
 		plugin.getPlayersInst().saveAllPlayers();
 		//Players.savePlayerData(event.getPlayer());
 	}

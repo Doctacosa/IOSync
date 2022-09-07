@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -154,6 +155,20 @@ public class Players implements Runnable {
 					*/
 				}
 
+				//Set the bed's position in the file
+				Location bed = plugin.getPlayersInst().getPlayerBed(player.getUniqueId());
+
+				if (bed != null) {
+					NBTFile playerData = new NBTFile(dest);
+
+					//Set bed positions
+					playerData.setInteger("SpawnX", bed.getBlockX());
+					playerData.setInteger("SpawnY", bed.getBlockY());
+					playerData.setInteger("SpawnZ", bed.getBlockZ());
+					
+					playerData.save();
+				}
+
 			} catch (IOException e) {
 				Bukkit.getLogger().severe("ERROR: Failed to copy file from storage");
 				Bukkit.getLogger().severe("Reason: " + e.getMessage());
@@ -206,6 +221,17 @@ public class Players implements Runnable {
 		if (Files.exists(source.toPath())) {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				//Read the bed position as set in the file
+				NBTFile playerData = new NBTFile(dest);
+				int spawnX = playerData.getInteger("SpawnX");
+				int spawnY = playerData.getInteger("SpawnY");
+				int spawnZ = playerData.getInteger("SpawnZ");
+				World world = plugin.getServer().getWorlds().get(0).getSpawnLocation().getWorld();
+				Location bed = new Location(world, spawnX, spawnY, spawnZ);
+
+				plugin.getPlayersInst().setPlayerBed(player, bed);
+
 			} catch (IOException e) {
 				Bukkit.getLogger().severe("ERROR: Failed to write file to storage");
 				Bukkit.getLogger().severe("Reason: " + e.getMessage());
@@ -263,15 +289,20 @@ public class Players implements Runnable {
 			UUID uuid = entry.getKey();
 			Location pos = entry.getValue();
 
-			try {
-				statsAccess.set("positions." + uuid + ".world", pos.getWorld().getName());
-				statsAccess.set("positions." + uuid + ".x", pos.getX());
-				statsAccess.set("positions." + uuid + ".y", pos.getY());
-				statsAccess.set("positions." + uuid + ".z", pos.getZ());
-				statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
-				statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
-			} catch (NullPointerException e) {
-				Bukkit.getLogger().severe("Failed to save the position in  " + filename + " for " + uuid.toString());
+			if (pos != null) {
+				try {
+					statsAccess.set("positions." + uuid + ".world", pos.getWorld().getName());
+					statsAccess.set("positions." + uuid + ".x", pos.getX());
+					statsAccess.set("positions." + uuid + ".y", pos.getY());
+					statsAccess.set("positions." + uuid + ".z", pos.getZ());
+					statsAccess.set("positions." + uuid + ".yaw", pos.getYaw());
+					statsAccess.set("positions." + uuid + ".pitch", pos.getPitch());
+				} catch (NullPointerException e) {
+					Bukkit.getLogger().severe("Failed to save the position in  " + filename + " for " + uuid.toString());
+					e.printStackTrace();
+				}
+			} else {
+				statsAccess.set("positions." + uuid, null);
 			}
 		}
 		
@@ -295,9 +326,8 @@ public class Players implements Runnable {
 
 	
 	//Set a player's spawn
-	public void setPlayerSpawn(Player player, Location bed) {
-		spawnsPlayers.put(player.getUniqueId(), player.getLocation());
-		bedsPlayers.put(player.getUniqueId(), bed);
+	public void setPlayerSpawn(Player player, Location loc) {
+		spawnsPlayers.put(player.getUniqueId(), loc);
 	}
 
 	//Get a player's spawn
@@ -306,25 +336,14 @@ public class Players implements Runnable {
 	}
 
 
-	//Handle a bed being broken
-	public void bedBroken(Location broken) {
-		Map< UUID, Location > bedsPlayersCopy = new HashMap< UUID, Location >();
-		bedsPlayersCopy.putAll(bedsPlayers);
+	//Set a player's bed position
+	public void setPlayerBed(Player player, Location bed) {
+		bedsPlayers.put(player.getUniqueId(), bed);
+	}
 
-		for (Map.Entry< UUID , Location > entry : bedsPlayersCopy.entrySet()) {
-			UUID uuid = entry.getKey();
-			Location bed = entry.getValue();
-
-			if (bed.getWorld() == broken.getWorld() &&
-				bed.getX() == broken.getX() &&
-				bed.getY() == broken.getY() &&
-				bed.getZ() == broken.getZ()) {
-
-				//A spawn bed has been broken, nuke the player's spawn position
-				bedsPlayers.remove(uuid);
-				spawnsPlayers.remove(uuid);
-			}
-		}
+	//Get a player's bed position
+	public Location getPlayerBed(UUID uuid) {
+		return bedsPlayers.get(uuid);
 	}
 
 
