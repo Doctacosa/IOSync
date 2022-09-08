@@ -161,8 +161,12 @@ public class Players implements Runnable {
 				if (bed != null) {
 					NBTFile playerData = new NBTFile(dest);
 
+					String world = Bukkit.getServer().getWorlds().get(0).getSpawnLocation().getWorld().getName();
+					if (bed.getWorld() != null)
+						world = bed.getWorld().getName();
+
 					//Set bed positions
-					playerData.setString("SpawnDimension", bed.getWorld().getName());
+					playerData.setString("SpawnDimension", world);
 					playerData.setInteger("SpawnX", bed.getBlockX());
 					playerData.setInteger("SpawnY", bed.getBlockY());
 					playerData.setInteger("SpawnZ", bed.getBlockZ());
@@ -292,7 +296,11 @@ public class Players implements Runnable {
 
 			if (pos != null) {
 				try {
-					statsAccess.set("positions." + uuid + ".world", pos.getWorld().getName());
+					String world = Bukkit.getServer().getWorlds().get(0).getSpawnLocation().getWorld().getName();
+					if (pos.getWorld() != null)
+						world = pos.getWorld().getName();
+
+					statsAccess.set("positions." + uuid + ".world", world);
 					statsAccess.set("positions." + uuid + ".x", pos.getX());
 					statsAccess.set("positions." + uuid + ".y", pos.getY());
 					statsAccess.set("positions." + uuid + ".z", pos.getZ());
