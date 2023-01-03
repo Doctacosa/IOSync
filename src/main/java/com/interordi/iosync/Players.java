@@ -161,12 +161,18 @@ public class Players implements Runnable {
 				if (bed != null) {
 					NBTFile playerData = new NBTFile(dest);
 
-					String world = Bukkit.getServer().getWorlds().get(0).getSpawnLocation().getWorld().getName();
+					String dimension = null;
 					if (bed.getWorld() != null)
-						world = bed.getWorld().getName();
+						dimension = bed.getWorld().getEnvironment().toString();
+					else
+						dimension = Bukkit.getServer().getWorlds().get(0).getSpawnLocation().getWorld().getEnvironment().toString();
+
+					dimension = dimension.toLowerCase();
+					if (dimension.equals("normal"))
+						dimension = "overworld";
 
 					//Set bed positions
-					playerData.setString("SpawnDimension", world);
+					playerData.setString("SpawnDimension", "minecraft:" + dimension);
 					playerData.setInteger("SpawnX", bed.getBlockX());
 					playerData.setInteger("SpawnY", bed.getBlockY());
 					playerData.setInteger("SpawnZ", bed.getBlockZ());
