@@ -10,7 +10,7 @@ Multiple groups of synchronization on the same network can be done; for example,
 
 One notable exception comes from player positions, which must NOT be shared across servers. As such, these are stored separately in data files.
 
-Note that this plugin needs an update on each protocol version change (usually game version updates) of Minecraft.
+Note that this plugin benefits from an update on each protocol version change (usually game version updates) of Minecraft. It doesn't tend to outright break, but a warning on boot will be shown.
 
 
 ## Setup guide
