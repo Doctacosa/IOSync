@@ -4,10 +4,11 @@ import com.interordi.iosync.IOSync;
 
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 
 public class LoginListener implements Listener {
@@ -29,7 +30,7 @@ public class LoginListener implements Listener {
 	}
 
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		//Save all players to ensure periodic safety saves
 		Location pos = event.getPlayer().getBedSpawnLocation();
@@ -40,13 +41,12 @@ public class LoginListener implements Listener {
 	}
 
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		//On login, return the player to his last position
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onPlayerSpawnLocationEvent(PlayerSpawnLocationEvent event) {
 		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
 		if (pos != null)
-			event.getPlayer().teleport(pos);
+			event.setSpawnLocation(pos);
 		else if (enablePositionSaving)
-			event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+			event.setSpawnLocation(event.getPlayer().getWorld().getSpawnLocation());
 	}
 }
