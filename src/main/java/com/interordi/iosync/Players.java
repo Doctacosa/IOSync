@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class Players implements Runnable {
 	private IOSync plugin;
 	private String storagePath;
 	private String serverPath;
+	private String playerPermissions;
 
 	private String configPath = "plugins/IOSync/";
 
@@ -40,10 +43,11 @@ public class Players implements Runnable {
 	private boolean saving = false;
 	
 	
-	public Players(IOSync plugin, String storagePath, String serverPath) {
+	public Players(IOSync plugin, String storagePath, String serverPath, String playerPermissions) {
 		this.plugin = plugin;
 		this.storagePath = storagePath;
 		this.serverPath = serverPath;
+		this.playerPermissions = playerPermissions;
 
 		loadAllData();
 	}
@@ -232,6 +236,16 @@ public class Players implements Runnable {
 		if (Files.exists(source.toPath())) {
 			try {
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				//Try to assign the given permissions to the player file
+				if (playerPermissions != null && !playerPermissions.isEmpty()) {
+					try {
+						Set< PosixFilePermission > othersRead = PosixFilePermissions.fromString(playerPermissions);
+						Files.setPosixFilePermissions(dest.toPath(), othersRead);
+					} catch (UnsupportedOperationException e) {
+						//Not supported on this platform; ignore
+					}
+				}
 
 				//Read the bed position as set in the file
 				NBTFile playerData = new NBTFile(dest);

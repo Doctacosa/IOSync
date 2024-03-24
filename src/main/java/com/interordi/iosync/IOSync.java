@@ -22,6 +22,7 @@ public class IOSync extends JavaPlugin {
 	private Switch switchSupport;
 
 	private String apiService;
+	private String playerPermissions;
 
 
 	public void onEnable() {
@@ -37,6 +38,7 @@ public class IOSync extends JavaPlugin {
 			storagePath += "/";
 
 		apiService = this.getConfig().getString("api-service", "");
+		playerPermissions = this.getConfig().getString("player-permissions", null);
 
 		//Get the location of the playerdata folder
 		String serverPath = "";
@@ -53,7 +55,7 @@ public class IOSync extends JavaPlugin {
 		serverPath = "./" + serverPath + "/playerdata/";
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
-		thisPlayers = new Players(this, storagePath, serverPath);
+		thisPlayers = new Players(this, storagePath, serverPath, playerPermissions);
 		
 		switchSupport = new Switch(this);
 
