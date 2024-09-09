@@ -39,6 +39,7 @@ public class IOSync extends JavaPlugin {
 
 		apiService = this.getConfig().getString("api-service", "");
 		playerPermissions = this.getConfig().getString("player-permissions", null);
+		int serverLoadTime = this.getConfig().getInt("server-load-time", 20);
 
 		//Get the location of the playerdata folder
 		String serverPath = "";
@@ -57,7 +58,7 @@ public class IOSync extends JavaPlugin {
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisPlayers = new Players(this, storagePath, serverPath, playerPermissions);
 		
-		switchSupport = new Switch(this);
+		switchSupport = new Switch(this, serverLoadTime);
 
 		//Save the data on a regular basis
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, thisPlayers, 5*60*20L, 5*60*20L);

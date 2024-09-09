@@ -31,8 +31,9 @@ public class Switch implements Runnable {
 	private int loadDuration = 20;
 
 	
-	public Switch(IOSync plugin) {
+	public Switch(IOSync plugin, int loadDuration) {
 		this.plugin = plugin;
+		this.loadDuration = loadDuration;
 		serversLoading = new HashMap< String, ServerLoading >();
 	}
 
