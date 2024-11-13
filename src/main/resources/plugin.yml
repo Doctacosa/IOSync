@@ -1,6 +1,6 @@
 name: IOSync
 main: com.interordi.iosync.IOSync
-version: 1.5.10
+version: 1.5.11
 api-version: 1.13
 
 commands:
