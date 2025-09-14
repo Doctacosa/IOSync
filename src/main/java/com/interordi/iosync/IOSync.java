@@ -17,6 +17,7 @@ import com.interordi.iosync.utilities.Commands;
 
 public class IOSync extends JavaPlugin {
 
+	@SuppressWarnings("unused")
 	private LoginListener thisLoginListener;
 	private Players thisPlayers;
 	private Switch switchSupport;
