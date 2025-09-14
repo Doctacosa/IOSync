@@ -107,17 +107,17 @@ public class Players implements Runnable {
 
 
 	//Load a player's inventory from storage
-	public void loadPlayer(Player player) {
-		loadPlayer(player, false);
+	public void loadPlayer(UUID playerUuid) {
+		loadPlayer(playerUuid, false);
 	}
 
-	public void loadPlayer(Player player, boolean enablePositionSaving) {
+	public void loadPlayer(UUID playerUuid, boolean enablePositionSaving) {
 
 		if (storagePath.isEmpty() || serverPath.isEmpty())
 			return;
 
-		File source = new File(storagePath + player.getUniqueId() + ".dat");
-		File dest = new File(serverPath + player.getUniqueId() + ".dat");
+		File source = new File(storagePath + playerUuid + ".dat");
+		File dest = new File(serverPath + playerUuid + ".dat");
 
 		if (Files.exists(source.toPath())) {
 			try {
@@ -160,7 +160,7 @@ public class Players implements Runnable {
 				}
 
 				//Set the bed's position in the file
-				Location bed = plugin.getPlayersInst().getPlayerBed(player.getUniqueId());
+				Location bed = plugin.getPlayersInst().getPlayerBed(playerUuid);
 
 				if (bed != null) {
 					NBTFile playerData = new NBTFile(dest);
