@@ -255,7 +255,8 @@ public class Players implements Runnable {
 				int spawnZ = playerData.getInteger("SpawnZ");
 				Location bed = new Location(world, spawnX, spawnY, spawnZ);
 
-				plugin.getPlayersInst().setPlayerBed(player, bed);
+				if (plugin.getServer().getWorlds().contains(bed.getWorld()))
+					plugin.getPlayersInst().setPlayerBed(player, bed);
 
 			} catch (IOException e) {
 				Bukkit.getLogger().severe("ERROR: Failed to write file to storage");

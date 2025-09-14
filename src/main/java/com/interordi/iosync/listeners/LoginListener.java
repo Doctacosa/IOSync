@@ -44,7 +44,7 @@ public class LoginListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerSpawnLocationEvent(PlayerSpawnLocationEvent event) {
 		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
-		if (pos != null)
+		if (pos != null && plugin.getServer().getWorlds().contains(pos.getWorld()))
 			event.setSpawnLocation(pos);
 		else if (enablePositionSaving)
 			event.setSpawnLocation(event.getPlayer().getWorld().getSpawnLocation());
