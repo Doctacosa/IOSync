@@ -37,7 +37,7 @@ public class LoginListener implements Listener {
 		try {
 			if (!found) {
 				Class< ? > playerLogin = Class.forName("io.papermc.paper.event.player.PlayerServerFullCheckEvent");
-				Bukkit.getLogger().info("* PlayerServerFullCheckEvent found");
+				Bukkit.getLogger().info("- PlayerServerFullCheckEvent found");
 
 				EventExecutor executor = (listener, event) -> {
 					if (playerLogin.isInstance(event)) {
@@ -63,14 +63,14 @@ public class LoginListener implements Listener {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			//Not found skipping
-			Bukkit.getLogger().info("* PlayerServerFullCheckEvent not found");
+			Bukkit.getLogger().info("- PlayerServerFullCheckEvent not found");
 		}
 
 		//Classic Spigot support
 		try {
 			if (!found) {
 				Class< ? > playerLogin = Class.forName("org.bukkit.event.player.PlayerLoginEvent");
-				Bukkit.getLogger().info("* PlayerLoginEvent found");
+				Bukkit.getLogger().info("- PlayerLoginEvent found");
 
 				EventExecutor executor = (listener, event) -> {
 					if (playerLogin.isInstance(event)) {
@@ -96,7 +96,7 @@ public class LoginListener implements Listener {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			//Not found, skipping
-			Bukkit.getLogger().info("* PlayerLoginEvent not found");
+			Bukkit.getLogger().info("- PlayerLoginEvent not found");
 		}
 	}
 
