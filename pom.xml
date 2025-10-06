@@ -29,7 +29,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <id>shade</id>
@@ -44,6 +44,10 @@
             <relocation>
               <pattern>de.tr7zw.changeme.nbtapi</pattern>
               <shadedPattern>com.interordi.iosync.nbtapi</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.bstats</pattern>
+              <shadedPattern>com.interordi.iosync.bstats</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
@@ -73,6 +77,13 @@
       <groupId>de.tr7zw</groupId>
       <artifactId>item-nbt-api</artifactId>
       <version>2.15.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bstats</groupId>
+      <artifactId>bstats-bukkit</artifactId>
+      <version>3.0.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
@@ -87,7 +98,7 @@
     </repository>
     <repository>
       <id>codemc-repo</id>
-      <url>https://repo.codemc.org/repository/maven-public/</url>
+      <url>https://repo.codemc.io/repository/maven-public/</url>
       <layout>default</layout>
     </repository>
   </repositories>

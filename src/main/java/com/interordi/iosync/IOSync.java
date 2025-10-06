@@ -1,5 +1,6 @@
 package com.interordi.iosync;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -64,6 +65,10 @@ public class IOSync extends JavaPlugin {
 		//Save the data on a regular basis
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, thisPlayers, 5*60*20L, 5*60*20L);
 
+		//Enable metrics
+		@SuppressWarnings("unused")
+		Metrics metrics = new Metrics(this, 27484);
+		
 		getLogger().info("IOSync enabled");
 	}
 
