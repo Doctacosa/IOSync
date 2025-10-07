@@ -40,6 +40,12 @@
           </execution>
         </executions>
         <configuration>
+          <artifactSet>
+            <includes>
+              <include>de.tr7zw.changeme.nbtapi</include>
+              <include>org.bstats</include>
+            </includes>
+          </artifactSet>
           <relocations>
             <relocation>
               <pattern>de.tr7zw.changeme.nbtapi</pattern>
