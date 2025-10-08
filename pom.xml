@@ -42,7 +42,7 @@
         <configuration>
           <artifactSet>
             <includes>
-              <include>de.tr7zw.changeme.nbtapi</include>
+              <include>de.tr7zw:item-nbt-api</include>
               <include>org.bstats</include>
             </includes>
           </artifactSet>
