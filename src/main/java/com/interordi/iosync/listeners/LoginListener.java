@@ -115,9 +115,17 @@ public class LoginListener implements Listener {
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerSpawnLocationEvent(PlayerSpawnLocationEvent event) {
 		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
-		if (pos != null && plugin.getServer().getWorlds().contains(pos.getWorld()))
+		Location posBackup = plugin.getPlayersInst().getBackupPlayerPosition(event.getPlayer().getUniqueId());
+
+		if (pos != null && plugin.getServer().getWorlds().contains(pos.getWorld())) {
+			//We have a location on record, send them there
 			event.setSpawnLocation(pos);
-		else if (enablePositionSaving)
+		} else if (posBackup != null && plugin.getServer().getWorlds().contains(posBackup.getWorld())) {
+			//No location recorded, use the one from the player's profile
+			event.setSpawnLocation(posBackup);
+		} else if (enablePositionSaving) {
+			//No known position, send back to spawn
 			event.setSpawnLocation(event.getPlayer().getWorld().getSpawnLocation());
+		}
 	}
 }

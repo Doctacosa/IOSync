@@ -40,6 +40,10 @@ public class Players implements Runnable {
 	private Map< UUID, Location > spawnsPlayers;
 	private Map< UUID, Location > bedsPlayers;
 
+	private Map< UUID, Location > backupPosPlayers;
+	private Map< UUID, Location > backupSpawnsPlayers;
+	private Map< UUID, Location > backupBedsPlayers;
+
 	private boolean saving = false;
 	
 	
@@ -48,6 +52,10 @@ public class Players implements Runnable {
 		this.storagePath = storagePath;
 		this.serverPath = serverPath;
 		this.playerPermissions = playerPermissions;
+
+		backupPosPlayers = new HashMap< UUID, Location >();
+		backupSpawnsPlayers = new HashMap< UUID, Location >();
+		backupBedsPlayers = new HashMap< UUID, Location >();
 
 		loadAllData();
 	}
@@ -121,29 +129,68 @@ public class Players implements Runnable {
 
 		if (Files.exists(source.toPath())) {
 			try {
+				Location serverSpawn = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
+
+				//If the player already has a location, extract it before overwriting it
+				//It will be used as a fallback if the plugin doesn't have anything yet
+				if (dest.exists() && !dest.isDirectory()) {
+					Location playerSpawn = serverSpawn.clone();
+
+					//Get the player's position from the current file
+					NBTFile playerData = new NBTFile(dest);
+					NBTList< Double > posTag = playerData.getDoubleList("Pos");
+					if (posTag != null) {
+						playerSpawn.setX(posTag.get(0));
+						playerSpawn.setY(posTag.get(1));
+						playerSpawn.setZ(posTag.get(2));
+					}
+
+					NBTList< Float > rotTag = playerData.getFloatList("Rotation");
+					if (rotTag != null) {
+						playerSpawn.setYaw(rotTag.get(0));
+						playerSpawn.setPitch(rotTag.get(1));
+					}
+
+					String worldName = playerData.getString("Dimension");
+					World world = Bukkit.getWorlds().get(0);
+					if (worldName.equalsIgnoreCase("minecraft:overworld"))
+						world = Bukkit.getWorlds().get(0);
+					else if (worldName.equalsIgnoreCase("minecraft:the_nether"))
+						world = Bukkit.getWorlds().get(1);
+					else if (worldName.equalsIgnoreCase("minecraft:the_end"))
+						world = Bukkit.getWorlds().get(2);
+					else
+						world = Bukkit.getWorld(worldName.substring("minecraft:".length()));
+
+					if (world != null)
+						playerSpawn.setWorld(world);
+					else
+						Bukkit.getLogger().info("World NOT found as backup: " + worldName);
+
+					backupPosPlayers.put(playerUuid, playerSpawn);
+				}
+
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				//NBT manipulation: https://github.com/tr7zw/Item-NBT-API
 
 				//Reset the player's position to spawn
 				//On actual join, will teleport to last position
-				Location posPlayer = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
-		
-				//NBT manipulation: https://github.com/tr7zw/Item-NBT-API
-
-				if (posPlayer != null) {
+				if (serverSpawn != null) {
 					NBTFile playerData = new NBTFile(dest);
 
 					//Set position
 					NBTList< Double > posTag = playerData.getDoubleList("Pos");
 					posTag.clear();
-					posTag.add(posPlayer.getX());
-					posTag.add(posPlayer.getY());
-					posTag.add(posPlayer.getZ());
+					posTag.add(serverSpawn.getX());
+					posTag.add(serverSpawn.getY());
+					posTag.add(serverSpawn.getZ());
 
 					//Set rotation
 					NBTList< Float > rotTag = playerData.getFloatList("Rotation");
 					rotTag.clear();
-					rotTag.add(posPlayer.getYaw());
-					rotTag.add(posPlayer.getPitch());
+					rotTag.add(serverSpawn.getYaw());
+					rotTag.add(serverSpawn.getPitch());
 
 					//Send to overworld
 					playerData.setString("Dimension", "minecraft:overworld");
@@ -352,6 +399,11 @@ public class Players implements Runnable {
 	//Get a player's position
 	public Location getPlayerPosition(UUID uuid) {
 		return posPlayers.get(uuid);
+	}
+
+	//Get a player's backup position
+	public Location getBackupPlayerPosition(UUID uuid) {
+		return backupPosPlayers.get(uuid);
 	}
 
 	
