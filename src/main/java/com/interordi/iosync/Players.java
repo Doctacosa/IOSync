@@ -42,7 +42,6 @@ public class Players implements Runnable {
 
 	private Map< UUID, Location > backupPosPlayers;
 	private Map< UUID, Location > backupSpawnsPlayers;
-	private Map< UUID, Location > backupBedsPlayers;
 
 	private boolean saving = false;
 	
@@ -55,7 +54,6 @@ public class Players implements Runnable {
 
 		backupPosPlayers = new HashMap< UUID, Location >();
 		backupSpawnsPlayers = new HashMap< UUID, Location >();
-		backupBedsPlayers = new HashMap< UUID, Location >();
 
 		loadAllData();
 	}
@@ -135,9 +133,10 @@ public class Players implements Runnable {
 				//It will be used as a fallback if the plugin doesn't have anything yet
 				if (dest.exists() && !dest.isDirectory()) {
 					Location playerSpawn = serverSpawn.clone();
+					NBTFile playerData = new NBTFile(dest);
+
 
 					//Get the player's position from the current file
-					NBTFile playerData = new NBTFile(dest);
 					NBTList< Double > posTag = playerData.getDoubleList("Pos");
 					if (posTag != null) {
 						playerSpawn.setX(posTag.get(0));
@@ -151,23 +150,27 @@ public class Players implements Runnable {
 						playerSpawn.setPitch(rotTag.get(1));
 					}
 
-					String worldName = playerData.getString("Dimension");
-					World world = Bukkit.getWorlds().get(0);
-					if (worldName.equalsIgnoreCase("minecraft:overworld"))
-						world = Bukkit.getWorlds().get(0);
-					else if (worldName.equalsIgnoreCase("minecraft:the_nether"))
-						world = Bukkit.getWorlds().get(1);
-					else if (worldName.equalsIgnoreCase("minecraft:the_end"))
-						world = Bukkit.getWorlds().get(2);
-					else
-						world = Bukkit.getWorld(worldName.substring("minecraft:".length()));
-
+					World world = getWorldFromId(playerData.getString("Dimension"));
 					if (world != null)
 						playerSpawn.setWorld(world);
-					else
-						Bukkit.getLogger().info("World NOT found as backup: " + worldName);
-
 					backupPosPlayers.put(playerUuid, playerSpawn);
+
+
+					//Get the player's respawn position with the same logic
+					Location playerRespawn = serverSpawn.clone();
+					if (playerData.hasTag("SpawnX") &&
+						playerData.hasTag("SpawnY") &&
+						playerData.hasTag("SpawnZ") &&
+						playerData.hasTag("SpawnDimension")
+					) {
+						playerRespawn.setX(playerData.getFloat("SpawnX"));
+						playerRespawn.setY(playerData.getFloat("SpawnY"));
+						playerRespawn.setZ(playerData.getFloat("SpawnZ"));
+						world = getWorldFromId(playerData.getString("SpawnDimension"));
+						if (world != null)
+							playerRespawn.setWorld(world);
+						backupSpawnsPlayers.put(playerUuid, playerRespawn);
+					}
 				}
 
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -388,6 +391,25 @@ public class Players implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	//Get a world reference based on its ID
+	public World getWorldFromId(String worldName) {
+		World world = Bukkit.getWorlds().get(0);
+		if (worldName.equalsIgnoreCase("minecraft:overworld"))
+			world = Bukkit.getWorlds().get(0);
+		else if (worldName.equalsIgnoreCase("minecraft:the_nether"))
+			world = Bukkit.getWorlds().get(1);
+		else if (worldName.equalsIgnoreCase("minecraft:the_end"))
+			world = Bukkit.getWorlds().get(2);
+		else
+			world = Bukkit.getWorld(worldName.substring("minecraft:".length()));
+
+		if (world == null)
+			Bukkit.getLogger().info("World NOT found as backup: " + worldName);
+
+		return world;
 	}
 
 
