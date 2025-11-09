@@ -6,11 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,6 +23,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTFile;
 import de.tr7zw.changeme.nbtapi.NBTList;
 
@@ -127,6 +131,8 @@ public class Players implements Runnable {
 
 		if (Files.exists(source.toPath())) {
 			try {
+				String version = getProcessVersion();
+
 				Location serverSpawn = Bukkit.getServer().getWorlds().get(0).getSpawnLocation();
 
 				//If the player already has a location, extract it before overwriting it
@@ -158,7 +164,23 @@ public class Players implements Runnable {
 
 					//Get the player's respawn position with the same logic
 					Location playerRespawn = serverSpawn.clone();
-					if (playerData.hasTag("SpawnX") &&
+					//1.21.5+ logic
+					if (playerData.hasTag("respawn")) {
+						NBTCompound respawnGroup = playerData.getCompound("respawn");
+						int[] pos = respawnGroup.getIntArray("pos");
+						playerRespawn.setX(pos[0]);
+						playerRespawn.setY(pos[1]);
+						playerRespawn.setZ(pos[2]);
+						world = getWorldFromId(respawnGroup.getString("dimension"));
+						if (world != null)
+							playerRespawn.setWorld(world);
+						playerRespawn.setYaw(respawnGroup.getFloat("yaw"));
+						playerRespawn.setPitch(respawnGroup.getFloat("pitch"));
+						
+						backupSpawnsPlayers.put(playerUuid, playerRespawn);
+					}
+					//1.21.4- logic
+					else if (playerData.hasTag("SpawnX") &&
 						playerData.hasTag("SpawnY") &&
 						playerData.hasTag("SpawnZ") &&
 						playerData.hasTag("SpawnDimension")
@@ -226,11 +248,33 @@ public class Players implements Runnable {
 						dimension = "overworld";
 
 					//Set bed positions
-					playerData.setString("SpawnDimension", "minecraft:" + dimension);
-					playerData.setInteger("SpawnX", bed.getBlockX());
-					playerData.setInteger("SpawnY", bed.getBlockY());
-					playerData.setInteger("SpawnZ", bed.getBlockZ());
+					if (version.equals("1.21.5+")) {
+						NBTCompound respawnGroup = playerData.addCompound("respawn");
+						int[] pos = {bed.getBlockX(), bed.getBlockY(), bed.getBlockZ()};
+						float zero = 0;
+						respawnGroup.setIntArray("pos", pos);
+						respawnGroup.setFloat("yaw", zero);
+						respawnGroup.setFloat("pitch", zero);
+						respawnGroup.setString("dimension", getIdFromWorld(bed.getWorld()));
+					} else {
+						playerData.setString("SpawnDimension", "minecraft:" + dimension);
+						playerData.setInteger("SpawnX", bed.getBlockX());
+						playerData.setInteger("SpawnY", bed.getBlockY());
+						playerData.setInteger("SpawnZ", bed.getBlockZ());
+					}
 					
+					playerData.save();
+				}
+				//If no bed, unset bed
+				else {
+					NBTFile playerData = new NBTFile(dest);
+					//1.21.5+ method
+					playerData.removeKey("respawn");
+					//1.21.4- method
+					playerData.removeKey("SpawnDimension");
+					playerData.removeKey("SpawnX");
+					playerData.removeKey("SpawnY");
+					playerData.removeKey("SpawnZ");
 					playerData.save();
 				}
 
@@ -285,6 +329,8 @@ public class Players implements Runnable {
 
 		if (Files.exists(source.toPath())) {
 			try {
+				String version = getProcessVersion();
+
 				Files.copy(source.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 				//Try to assign the given permissions to the player file
@@ -299,13 +345,44 @@ public class Players implements Runnable {
 
 				//Read the bed position as set in the file
 				NBTFile playerData = new NBTFile(dest);
-				World world = plugin.getServer().getWorld(playerData.getString("SpawnDimension"));
-				int spawnX = playerData.getInteger("SpawnX");
-				int spawnY = playerData.getInteger("SpawnY");
-				int spawnZ = playerData.getInteger("SpawnZ");
-				Location bed = new Location(world, spawnX, spawnY, spawnZ);
+				World world;
+				Location bed = null;
 
-				if (plugin.getServer().getWorlds().contains(bed.getWorld()))
+				//Get the player's respawn position
+				//1.21.5+ logic
+				if (playerData.hasTag("respawn")) {
+					NBTCompound respawnGroup = playerData.getCompound("respawn");
+					int[] pos = respawnGroup.getIntArray("pos");
+					world = getWorldFromId(respawnGroup.getString("dimension"));
+					if (world != null) {
+						bed = new Location(
+							world,
+							pos[0],
+							pos[1],
+							pos[2]
+						);
+					}
+					bed.setYaw(respawnGroup.getInteger("yaw"));
+					bed.setPitch(respawnGroup.getInteger("pitch"));
+				}
+				//1.21.4- logic
+				else if (playerData.hasTag("SpawnX") &&
+					playerData.hasTag("SpawnY") &&
+					playerData.hasTag("SpawnZ") &&
+					playerData.hasTag("SpawnDimension")
+				) {
+					world = getWorldFromId(playerData.getString("SpawnDimension"));
+					if (world != null) {
+						bed = new Location(
+							world,
+							playerData.getInteger("SpawnX"),
+							playerData.getInteger("SpawnY"),
+							playerData.getInteger("SpawnZ")
+						);
+					}
+				}
+
+				if (bed != null && plugin.getServer().getWorlds().contains(bed.getWorld()))
 					plugin.getPlayersInst().setPlayerBed(player, bed);
 
 			} catch (IOException e) {
@@ -410,6 +487,45 @@ public class Players implements Runnable {
 			Bukkit.getLogger().info("World NOT found as backup: " + worldName);
 
 		return world;
+	}
+
+
+	//Get a world ID based on its name
+	public String getIdFromWorld(World world) {
+		String worldName = world.getName();
+		if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))
+			worldName = "minecraft:overworld";
+		else if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(1).getName()))
+			worldName = "minecraft:the_nether";
+		else if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(2).getName()))
+			worldName = "minecraft:the_end";
+		else
+			worldName = "minecraft:" + worldName;
+
+		return worldName;
+	}
+
+
+	//Check which version we're dealing with
+	public String getProcessVersion() {
+		String gameVersion = Bukkit.getVersion().split("-")[0];
+		List< Integer > subVersion = null;
+		String process = "1.21.5+";
+		if (gameVersion.contains(".")) {
+			subVersion = Arrays.asList(gameVersion.split("\\."))
+				.stream().map(x -> Integer.parseInt(x))
+				.collect(Collectors.toList());
+
+			if (subVersion.get(0) <= 1 &&
+				subVersion.get(1) <= 21 &&
+				subVersion.get(2) < 5) {
+				process = "1.21.4-";
+			}
+		} else {
+			Bukkit.getLogger().severe("Unreadable game version: " + gameVersion + " from " + Bukkit.getVersion() + ", assuming latest");
+		}
+
+		return process;
 	}
 
 
