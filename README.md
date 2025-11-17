@@ -26,7 +26,6 @@ Note that this plugin benefits from an update on each protocol version change (u
 ## Current limitations
 
 * All game servers must be in the same file system (multiple hardware or separate Docker instances not supported).
-* On first join after installation, players might be sent to spawn. This can happen only once per player per server.
 
 
 ## Configuration
