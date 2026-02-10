@@ -5,6 +5,7 @@ import com.interordi.iosync.IOSync;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.RegisteredListener;
-import org.spigotmc.event.player.PlayerSpawnLocationEvent;
+import io.papermc.paper.event.player.AsyncPlayerSpawnLocationEvent;
 
 
 public class LoginListener implements Listener {
@@ -33,6 +34,7 @@ public class LoginListener implements Listener {
 		Bukkit.getLogger().info("Testing for login event support:");
 		boolean found = false;
 
+		//Action on connecting, early in the process
 		//New Paper model
 		try {
 			if (!found) {
@@ -101,6 +103,7 @@ public class LoginListener implements Listener {
 	}
 
 
+	//Action on leaving
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		//Save all players to ensure periodic safety saves
@@ -112,10 +115,12 @@ public class LoginListener implements Listener {
 	}
 
 
+	//Action on joining
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onPlayerSpawnLocationEvent(PlayerSpawnLocationEvent event) {
-		Location pos = plugin.getPlayersInst().getPlayerPosition(event.getPlayer().getUniqueId());
-		Location posBackup = plugin.getPlayersInst().getBackupPlayerPosition(event.getPlayer().getUniqueId());
+	public void onPlayerSpawnLocationEvent(AsyncPlayerSpawnLocationEvent event) {
+		UUID uuid = event.getConnection().getProfile().getId();
+		Location pos = plugin.getPlayersInst().getPlayerPosition(uuid);
+		Location posBackup = plugin.getPlayersInst().getBackupPlayerPosition(uuid);
 
 		if (pos != null && plugin.getServer().getWorlds().contains(pos.getWorld())) {
 			//We have a location on record, send them there
@@ -125,7 +130,7 @@ public class LoginListener implements Listener {
 			event.setSpawnLocation(posBackup);
 		} else if (enablePositionSaving) {
 			//No known position, send back to spawn
-			event.setSpawnLocation(event.getPlayer().getWorld().getSpawnLocation());
+			event.setSpawnLocation(event.getSpawnLocation());
 		}
 	}
 }
