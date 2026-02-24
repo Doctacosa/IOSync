@@ -476,9 +476,9 @@ public class Players implements Runnable {
 		World world = Bukkit.getWorlds().get(0);
 		if (worldName.equalsIgnoreCase("minecraft:overworld"))
 			world = Bukkit.getWorlds().get(0);
-		else if (worldName.equalsIgnoreCase("minecraft:the_nether"))
+		else if (worldName.equalsIgnoreCase("minecraft:the_nether") && Bukkit.getWorlds().size() > 1)
 			world = Bukkit.getWorlds().get(1);
-		else if (worldName.equalsIgnoreCase("minecraft:the_end"))
+		else if (worldName.equalsIgnoreCase("minecraft:the_end") && Bukkit.getWorlds().size() > 2)
 			world = Bukkit.getWorlds().get(2);
 		else
 			world = Bukkit.getWorld(worldName.substring("minecraft:".length()));
@@ -495,9 +495,9 @@ public class Players implements Runnable {
 		String worldName = world.getName();
 		if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))
 			worldName = "minecraft:overworld";
-		else if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(1).getName()))
+		else if (Bukkit.getWorlds().size() > 1 && worldName.equalsIgnoreCase(Bukkit.getWorlds().get(1).getName()))
 			worldName = "minecraft:the_nether";
-		else if (worldName.equalsIgnoreCase(Bukkit.getWorlds().get(2).getName()))
+		else if (Bukkit.getWorlds().size() > 2 && worldName.equalsIgnoreCase(Bukkit.getWorlds().get(2).getName()))
 			worldName = "minecraft:the_end";
 		else
 			worldName = "minecraft:" + worldName;
