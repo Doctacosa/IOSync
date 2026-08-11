@@ -43,7 +43,7 @@ public class IOSync extends JavaPlugin {
 		playerPermissions = this.getConfig().getString("player-permissions", null);
 		int serverLoadTime = this.getConfig().getInt("server-load-time", 20);
 
-		//Get the location of the playerdata folder
+		//Get the location of the players/data folder
 		String serverPath = "";
 		try {
 			BufferedReader is = new BufferedReader(new FileReader("server.properties"));
@@ -55,7 +55,7 @@ public class IOSync extends JavaPlugin {
 			Bukkit.getLogger().warning("ERROR: Couldn't read level-name, defaulting to 'world'");
 			serverPath = "world";
 		}
-		serverPath = "./" + serverPath + "/playerdata/";
+		serverPath = "./" + serverPath + "/players/data/";
 
 		thisLoginListener = new LoginListener(this, (!storagePath.isEmpty() && !serverPath.isEmpty()));
 		thisPlayers = new Players(this, storagePath, serverPath, playerPermissions);
