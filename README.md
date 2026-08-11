@@ -4,7 +4,7 @@
 
 This Bukkit plugin synchronizes a player's data across multiple Minecraft server instances. This is especially useful in a BungeeCord setting, where players want a continuous experience moving between multiple server instances.
 
-This is done by copying a player's data file (`world/playerdata/UUID.dat`) to a common directory when they disconnect. On reconnection, on the same server or another, the file is copied in place before the server's processes try to read from it. Effectively, the player's data travels with them.
+This is done by copying a player's data file (`world/players/data/UUID.dat`) to a common directory when they disconnect. On reconnection, on the same server or another, the file is copied in place before the server's processes try to read from it. Effectively, the player's data travels with them.
 
 Multiple groups of synchronization on the same network can be done; for example, all survival servers vs all minigame servers. This is possibly by defining different save directories in the config. All of the servers using the same directory will be put in a common pool to share that data.
 
@@ -13,6 +13,8 @@ One notable exception comes from player positions, which must NOT be shared acro
 For server owners on POSIX-compatible systems (Linux and others), you can set the `player-permissions` config value to set the file permissions that the player data should have on saving to the shared directory. Minecraft versions up to 1.20.1 set read permissions to the group; this is no longer the case. This lets you revert this behavior. Don't use unless you know what you're doing, you could break the sync process!
 
 Note that this plugin benefits from an update on each protocol version change (usually game version updates) of Minecraft. It doesn't tend to outright break, but a warning on boot will be shown.
+
+**For Minecraft 1.21 and below, use IOSync 1.8.2. For Minecraft 26.1 and beyond, use the latest version. The player files have moved, causing a breaking change.**
 
 
 ## Setup guide
