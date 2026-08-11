@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.interordi</groupId>
   <artifactId>IOSync</artifactId>
-  <version>1.8.3</version>
+  <version>1.9</version>
   <name>IOSync</name>
   <description>Synchronize a player's data across multiple Minecraft server instances</description>
   <properties>
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>de.tr7zw</groupId>
       <artifactId>item-nbt-api</artifactId>
-      <version>2.15.7</version>
+      <version>2.16.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
